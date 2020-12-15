@@ -2,7 +2,7 @@ The AgeUSD Stablecoin Protocol
 -------------------------
 
 AgeUSD is a novel crypto-backed stablecoin protocol that has been created in joint partnership by the [Ergo Foundation](https://ergoplatform.org/en/foundation/), [Emurgo](https://emurgo.io/), and [IOG](https://iohk.io/en/about/) on top of the [Ergo Blockchain](https://ergoplatform.org/).
-
+This repository contains the specifications/smart contracts/off-chain code(headless dApp) of AgeUSD. Everything in this repo can be used to deploy your own AgeUSD instance on top of the Ergo Blockchain.
 
 ...
 
@@ -20,6 +20,12 @@ Reserve Providers can only redeem their ReserveCoins for Ergs if the price of Er
 As such Reserve Providers allow AgeUSD users to enjoy stability of value. On their end, the Reserve Providers absorb the potential upside (if the value of the reserves goes up via the price of Ergs increasing compared to USD) but also absorb the potential downside (if the underlying cryptocurrency in the reserve goes down in price).
 
 This provides individuals with the ability to choose to either go "long" Ergs (via minting ReserveCoins), or to choose stability (via minting AgeUSD).
+
+
+## Fees
+
+- 1% Fee on all minting/redeeming actions
+- 0.25% Implementor Fee which pays out the front-end implementor
 
 
 ## Traversing This Repository
