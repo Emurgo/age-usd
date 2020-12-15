@@ -1,0 +1,6 @@
+.idea
+target
+*.aux
+*.log
+*.out
+paper/main.pdf
