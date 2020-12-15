@@ -7,11 +7,11 @@ use crate::parameters::{
     MIN_RESERVE_RATIO, RESERVECOIN_DEFAULT_PRICE, RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID,
 };
 use crate::receipt::ReceiptBox;
-use ergo_headless_dapp_framework::P2PKAddressString;
 use ergo_headless_dapp_framework::{
     create_candidate, ErgUsdOraclePoolBox, ErgsBox, TokensChangeBox, TxFeeBox, WrappedBox,
 };
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg};
+use ergo_headless_dapp_framework::{ErgoAddressString, P2PKAddressString};
 use ergo_lib::chain::transaction::unsigned::UnsignedTransaction;
 use ergo_lib::chain::transaction::UnsignedInput;
 use ergo_lib_wasm::box_coll::ErgoBoxes;
@@ -79,7 +79,7 @@ impl StableCoinProtocol {
         oracle_box: &ErgUsdOraclePoolBox,
         bank_box: &BankBox,
         ergo_boxes: &ErgoBoxes,
-        implementor_address: P2PKAddressString,
+        implementor_address: ErgoAddressString,
     ) -> Result<WUnsignedTransaction, JsValue> {
         let ergs_boxes: Vec<ErgsBox> = ErgsBox::convert_from_ergo_boxes(ergo_boxes)
             .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
@@ -112,7 +112,7 @@ impl StableCoinProtocol {
         oracle_box: &ErgUsdOraclePoolBox,
         bank_box: &BankBox,
         ergo_boxes: &ErgoBoxes,
-        implementor_address: P2PKAddressString,
+        implementor_address: ErgoAddressString,
     ) -> Result<WUnsignedTransaction, JsValue> {
         let ergs_boxes: Vec<ErgsBox> = ErgsBox::convert_from_ergo_boxes(ergo_boxes)
             .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
@@ -146,7 +146,7 @@ impl StableCoinProtocol {
         oracle_box: &ErgUsdOraclePoolBox,
         bank_box: &BankBox,
         ergs_boxes: &Vec<ErgsBox>,
-        implementor_address: P2PKAddressString,
+        implementor_address: ErgoAddressString,
     ) -> Result<UnsignedTransaction, ProtocolError> {
         //
         // Defining useful values
@@ -291,7 +291,7 @@ impl StableCoinProtocol {
         oracle_box: &ErgUsdOraclePoolBox,
         bank_box: &BankBox,
         ergs_boxes: &Vec<ErgsBox>,
-        implementor_address: P2PKAddressString,
+        implementor_address: ErgoAddressString,
     ) -> Result<UnsignedTransaction, ProtocolError> {
         //
         // Defining useful values
@@ -437,7 +437,7 @@ impl StableCoinProtocol {
         oracle_box: &ErgUsdOraclePoolBox,
         bank_box: &BankBox,
         rc_boxes: &Vec<ReserveCoinBox>,
-        implementor_address: P2PKAddressString,
+        implementor_address: ErgoAddressString,
     ) -> Result<UnsignedTransaction, ProtocolError> {
         //
         // Defining useful values
@@ -585,7 +585,7 @@ impl StableCoinProtocol {
         oracle_box: &ErgUsdOraclePoolBox,
         bank_box: &BankBox,
         sc_boxes: &Vec<StableCoinBox>,
-        implementor_address: P2PKAddressString,
+        implementor_address: ErgoAddressString,
     ) -> Result<UnsignedTransaction, ProtocolError> {
         //
         // Defining useful values
