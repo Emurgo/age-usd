@@ -1,4 +1,4 @@
-AgeUSD Specificatons
+AgeUSD Specifications
 ---------------------
 
 In this folder you will find the Ergo specifications of the AgeUSD protocol. The versions start from v0.1 with the bare minimum feature set required for the stablecoin to function and move upward with new functionality added to each version.

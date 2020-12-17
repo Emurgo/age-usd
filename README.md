@@ -50,18 +50,18 @@ This repo holds the specifications, smart contracts, and off-chain code(headless
 
 
 ### AgeUSD Specs
-
+[The AgeUSD Specs](ageusd-specs)
 ...
 
 
 ### AgeUSD Smart Contracts
-
+[The AgeUSD Smart Contracts](ageusd-smart-contracts)
 
 ...
 
 
 ### AgeUSD Headless dApp
-The AgeUSD Headless dApp is the off-chain code which provides developers with a pure and portable interface for both reading the current state of a deployed instance of AgeUSD on-chain, performing Actions in the protocol, as well as containing a few helper methods to make the lives of front-end implementors easier.
+[The AgeUSD Headless dApp](ageusd-headless) is the off-chain code which provides developers with a pure and portable interface for both reading the current state of a deployed instance of AgeUSD on-chain, performing Actions in the protocol, as well as containing a few helper methods to make the lives of front-end implementors easier.
 
 Readable AgeUSD State:
 - Base Reserves
@@ -89,7 +89,7 @@ Helper Methods:
 
 
 ### AgeUSD CLI
-The AgeUSD CLI uses the AgeUSD Headless dApp and implements a command line interface for interacting with a deployment of the protocol on-chain. The CLI use an Ergo Node for UTXO-set scanning to find the required boxes + posting the transactions.
+[The AgeUSD CLI](ageusd-cli) uses the AgeUSD Headless dApp and implements a command line interface for interacting with a deployment of the protocol on-chain. The CLI use an Ergo Node for UTXO-set scanning to find the required boxes + posting the transactions.
 
 The CLI is primarily geared to be used by technical users to interact with a deployment of AgeUSD, and to be an example for frontend developers to understand how to implement a frontend when looking to create a GUI. (Do note, the AgeUSD Headless dApp provides an interface for finding all input UTXOs without using UTXO-set scans as well, making the developer experience very streamlined)
 
