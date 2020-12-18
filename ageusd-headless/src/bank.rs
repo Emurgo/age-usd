@@ -58,7 +58,7 @@ impl BankBox {
     }
 
     /// Acquire the current Reserve Ratio in the Bank box
-    #[wasm_bindgen(constructor)]
+    #[wasm_bindgen]
     pub fn current_reserve_ratio(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
         reserve_ratio(
             self.base_reserves(),
