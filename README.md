@@ -31,6 +31,8 @@ As such Reserve Providers allow AgeUSD users to enjoy stability of value. On the
 
 This provides individuals with the ability to choose to either go "long" Ergs (via minting ReserveCoins), or to choose stability (via minting AgeUSD).
 
+For more detailed example scenarios check out the [AgeUSD stories](docs/stories.md) document.
+
 
 ## Fees
 The AgeUSD protocol fee parameter defaults are currently set at:
