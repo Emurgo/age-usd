@@ -11,7 +11,7 @@ use crate::parameters::{
 };
 use ergo_headless_dapp_framework::{
     create_candidate, BoxSpec, ExplorerFindable, HeadlessDappError, SpecBox, SpecifiedBox,
-    TokenSpec, WrapBox, WrappedBox,
+    TokenSpec, WASMBox, WrapBox, WrappedBox,
 };
 use ergo_headless_dapp_framework::{encoding::unwrap_long, ErgUsdOraclePoolBox};
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg, P2SAddressString};
@@ -24,7 +24,7 @@ use wasm_bindgen::prelude::*;
 
 /// The struct which represents the `Bank` stage.
 #[wasm_bindgen]
-#[derive(Debug, Clone, WrapBox, SpecBox)]
+#[derive(Debug, Clone, WrapBox, SpecBox, WASMBox)]
 pub struct BankBox {
     ergo_box: ErgoBox,
 }
@@ -45,18 +45,6 @@ impl SpecifiedBox for BankBox {
 /// WASM-supported methods related to `BankStage`
 #[wasm_bindgen]
 impl BankBox {
-    /// Create a new BankBox via WASM
-    #[wasm_bindgen(constructor)]
-    pub fn w_new(ergo_box: WErgoBox) -> Result<BankBox, JsValue> {
-        let b: ErgoBox = ergo_box.into();
-        Self::box_spec()
-            .verify_box(&b)
-            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
-        Ok(BankBox {
-            ergo_box: b.clone(),
-        })
-    }
-
     /// Acquire the current Reserve Ratio in the Bank box
     #[wasm_bindgen]
     pub fn current_reserve_ratio(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
@@ -182,6 +170,7 @@ impl BankBox {
     /// The total amount of nanoErgs which is needed to cover minting
     /// the provided number of ReserveCoins, cover tx fees, implementor
     /// fee, etc.
+    #[wasm_bindgen]
     pub fn total_cost_to_mint_reservecoin(
         &self,
         amount_to_mint: u64,

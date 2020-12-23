@@ -10,7 +10,7 @@ use ergo_headless_dapp_framework::encoding::{
     unwrap_hex_encoded_string,
 };
 use ergo_headless_dapp_framework::{
-    create_candidate, HeadlessDappError, TokensChangeBox, TxFeeBox, WrapBox, WrappedBox,
+    create_candidate, HeadlessDappError, TokensChangeBox, TxFeeBox, WASMBox, WrapBox, WrappedBox,
 };
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg, P2PKAddressString, P2SAddressString};
 pub use ergo_headless_dapp_framework::{
@@ -19,9 +19,12 @@ pub use ergo_headless_dapp_framework::{
 use ergo_lib::chain::ergo_box::{ErgoBox, ErgoBoxCandidate};
 use ergo_lib::chain::transaction::unsigned::UnsignedTransaction;
 use ergo_lib::chain::transaction::UnsignedInput;
+use ergo_lib_wasm::ergo_box::ErgoBox as WErgoBox;
+use wasm_bindgen::prelude::*;
 
 /// A box which represents a cast vote for updating the protocol
-#[derive(Debug, Clone, WrapBox, SpecBox)]
+#[wasm_bindgen]
+#[derive(Debug, Clone, WrapBox, SpecBox, WASMBox)]
 pub struct BallotBox {
     ergo_box: ErgoBox,
 }
@@ -109,7 +112,8 @@ impl BallotBox {
 
 /// The box which holds the Update NFT & the address to be used to
 /// update the protocol in R4.
-#[derive(Debug, Clone, WrapBox, SpecBox)]
+#[wasm_bindgen]
+#[derive(Debug, Clone, WrapBox, SpecBox, WASMBox)]
 pub struct UpdateBox {
     ergo_box: ErgoBox,
 }

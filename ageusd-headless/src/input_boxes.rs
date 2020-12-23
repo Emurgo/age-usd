@@ -4,14 +4,14 @@ use crate::error::{ProtocolError, Result};
 use crate::parameters::{RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID};
 pub use ergo_headless_dapp_framework::box_traits::{ExplorerFindable, SpecifiedBox, WrappedBox};
 pub use ergo_headless_dapp_framework::specified_boxes::{ErgUsdOraclePoolBox, ErgsBox};
-use ergo_headless_dapp_framework::{BoxSpec, HeadlessDappError, SpecBox, WrapBox};
+use ergo_headless_dapp_framework::{BoxSpec, HeadlessDappError, SpecBox, WASMBox, WrapBox};
 use ergo_lib::chain::ergo_box::ErgoBox;
 use ergo_lib_wasm::ergo_box::ErgoBox as WErgoBox;
 use wasm_bindgen::prelude::*;
 
 /// A predicated box which holds ReserveCoins
 #[wasm_bindgen]
-#[derive(Clone, Debug, WrapBox, SpecBox)]
+#[derive(Debug, Clone, WrapBox, SpecBox, WASMBox)]
 pub struct ReserveCoinBox {
     ergo_box: ErgoBox,
 }
@@ -19,13 +19,6 @@ pub struct ReserveCoinBox {
 /// WASM ReserveCoinBox Methods
 #[wasm_bindgen]
 impl ReserveCoinBox {
-    /// Create a new `ReserveCoin`
-    #[wasm_bindgen(constructor)]
-    pub fn w_new(wb: WErgoBox) -> std::result::Result<ReserveCoinBox, JsValue> {
-        let b: ErgoBox = wb.into();
-        ReserveCoinBox::new(&b).map_err(|e| JsValue::from_str(&format! {"{:?}", e}))
-    }
-
     /// Get the amount of tokens within the box
     #[wasm_bindgen(getter)]
     pub fn token_amount(&self) -> u64 {
@@ -75,7 +68,7 @@ impl ReserveCoinBox {
 
 /// A predicated box which holds StableCoins
 #[wasm_bindgen]
-#[derive(Debug, Clone, WrapBox, SpecBox)]
+#[derive(Debug, Clone, WrapBox, SpecBox, WASMBox)]
 pub struct StableCoinBox {
     ergo_box: ErgoBox,
 }
@@ -83,13 +76,6 @@ pub struct StableCoinBox {
 /// WASM StableCoinBox Methods
 #[wasm_bindgen]
 impl StableCoinBox {
-    /// Create a new `StableCoinBox`
-    #[wasm_bindgen(constructor)]
-    pub fn w_new(wb: WErgoBox) -> std::result::Result<StableCoinBox, JsValue> {
-        let b: ErgoBox = wb.into();
-        StableCoinBox::new(&b).map_err(|e| JsValue::from_str(&format! {"{:?}", e}))
-    }
-
     #[wasm_bindgen(getter)]
     /// Get the amount of tokens within the box
     pub fn token_amount(&self) -> u64 {
