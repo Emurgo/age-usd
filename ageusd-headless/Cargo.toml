@@ -11,7 +11,7 @@ crate-type = ["cdylib", "rlib"]
 
 
 [dependencies]
-ergo-headless-dapp-framework =  "0.1.3"
+ergo-headless-dapp-framework =  "0.1.4"
 ergo-lib                     = "0.4.1"
 ergo-lib-wasm                = "0.4.1"
 thiserror                    = "1.0.22"

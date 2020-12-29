@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 ageusd-headless              = { path = "../ageusd-headless" }
-ergo-headless-dapp-framework = "0.1.2"
+ergo-headless-dapp-framework = "0.1.4"
 openssl                      = { version = "0.10", features = ["vendored"] }
 reqwest                      = { version = "0.10.8", features = ["blocking"] }
 ergo-lib                     = "0.4.1"
