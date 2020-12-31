@@ -8,7 +8,7 @@ use crate::parameters::{
 };
 use crate::receipt::ReceiptBox;
 use ergo_headless_dapp_framework::{
-    create_candidate, ErgUsdOraclePoolBox, ErgsBox, TokensChangeBox, TxFeeBox, WrappedBox, unsigned_transaction_to_assembler_spec,
+    create_candidate, ErgUsdOraclePoolBox, ErgsBox, TokensChangeBox, TxFeeBox, WrappedBox, TxAssemblerSpecBuilder,
 };
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg};
 use ergo_headless_dapp_framework::{ErgoAddressString, P2PKAddressString};
@@ -86,11 +86,11 @@ impl StableCoinProtocol {
         // Creating a placeholder box which holds an amount of nanoErgs equal to
         // `total_input_nano_ergs` so the `UnsignedTransaction` can be created
         // and then converted and used for an Assembler spec.
-        let mut placeholder_box = oracle_box.get_box().clone();
-        placeholder_box.value = BoxValue::new(total_input_nano_ergs).map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
-
-        let ergs_boxes = vec![ErgsBox::new(&placeholder_box).map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?];
-
+        let mut ergs_boxes = vec![];
+        if let Some(placeholder_box) = TxAssemblerSpecBuilder::create_placeholder_ergs_box(total_input_nano_ergs)
+        {
+            ergs_boxes.push(placeholder_box)
+        }
         let unsigned_tx = self
             .action_mint_reservecoin(
                 amount_to_mint.clone(),
@@ -105,7 +105,7 @@ impl StableCoinProtocol {
             .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
 
 
-        Ok(unsigned_transaction_to_assembler_spec(unsigned_tx, transaction_fee))
+        Ok(TxAssemblerSpecBuilder::new(unsigned_tx).build_assembler_spec(transaction_fee))
     }
 
     #[wasm_bindgen]
