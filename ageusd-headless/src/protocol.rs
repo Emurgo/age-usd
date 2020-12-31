@@ -82,7 +82,6 @@ impl StableCoinProtocol {
         total_input_nano_ergs: NanoErg,
         implementor_address: ErgoAddressString,
     ) -> Result<String, JsValue> {
-
         // Creating a placeholder box which holds an amount of nanoErgs equal to
         // `total_input_nano_ergs` so the `UnsignedTransaction` can be created
         // and then converted and used for an Assembler spec.
@@ -103,8 +102,41 @@ impl StableCoinProtocol {
                 implementor_address,
             )
             .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+        Ok(TxAssemblerSpecBuilder::new(unsigned_tx).build_assembler_spec(transaction_fee))
+    }
 
 
+    #[wasm_bindgen]
+    /// Action: Mint StableCoin by providing Ergs.
+    /// This is the WASM Tx Assembler wrapper function for said Action.
+    pub fn w_assembler_mint_stablecoin(
+        &self,
+        amount_to_mint: u64,
+        user_address: P2PKAddressString,
+        transaction_fee: NanoErg,
+        current_height: BlockHeight,
+        oracle_box: &ErgUsdOraclePoolBox,
+        bank_box: &BankBox,
+        total_input_nano_ergs: NanoErg,
+        implementor_address: ErgoAddressString,
+    ) -> Result<String, JsValue> {
+        let mut ergs_boxes = vec![];
+        if let Some(placeholder_box) = TxAssemblerSpecBuilder::create_placeholder_ergs_box(total_input_nano_ergs)
+        {
+            ergs_boxes.push(placeholder_box)
+        }
+        let unsigned_tx = self
+            .action_mint_stablecoin(
+                amount_to_mint.clone(),
+                user_address,
+                transaction_fee,
+                current_height,
+                &oracle_box,
+                &bank_box,
+                &ergs_boxes,
+                implementor_address,
+            )
+            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
         Ok(TxAssemblerSpecBuilder::new(unsigned_tx).build_assembler_spec(transaction_fee))
     }
 
