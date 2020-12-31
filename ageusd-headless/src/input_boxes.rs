@@ -7,6 +7,7 @@ pub use ergo_headless_dapp_framework::specified_boxes::{ErgUsdOraclePoolBox, Erg
 use ergo_headless_dapp_framework::{BoxSpec, HeadlessDappError, SpecBox, WASMBox, WrapBox};
 use ergo_lib::chain::ergo_box::ErgoBox;
 use ergo_lib_wasm::ergo_box::ErgoBox as WErgoBox;
+use ergo_lib_wasm::box_coll::ErgoBoxes;
 use wasm_bindgen::prelude::*;
 
 /// A predicated box which holds ReserveCoins
@@ -64,6 +65,17 @@ impl ReserveCoinBox {
     pub fn sum_token_amount(boxes: &Vec<ReserveCoinBox>) -> u64 {
         boxes.into_iter().fold(0, |acc, b| b.token_amount() + acc)
     }
+
+    /// Converts from the WASM wrapper `ErgoBoxes`.
+    pub fn convert_from_ergo_boxes(ergo_boxes: &ErgoBoxes) -> Result<Vec<ReserveCoinBox>> {
+        let mut boxes: Vec<ReserveCoinBox> = vec![];
+        let unwrapped_boxes: Vec<ErgoBox> = ergo_boxes.clone().into();
+        for b in unwrapped_boxes {
+            let ergs_box = ReserveCoinBox::new(&b)?;
+            boxes.push(ergs_box);
+        }
+        Ok(boxes)
+    }
 }
 
 /// A predicated box which holds StableCoins
@@ -120,5 +132,16 @@ impl StableCoinBox {
     /// Sums the token amount of a list of `StableCoinBox`es
     pub fn sum_token_amount(boxes: &Vec<StableCoinBox>) -> u64 {
         boxes.into_iter().fold(0, |acc, b| b.token_amount() + acc)
+    }
+
+    /// Converts from the WASM wrapper `ErgoBoxes`.
+    pub fn convert_from_ergo_boxes(ergo_boxes: &ErgoBoxes) -> Result<Vec<StableCoinBox>> {
+        let mut boxes: Vec<StableCoinBox> = vec![];
+        let unwrapped_boxes: Vec<ErgoBox> = ergo_boxes.clone().into();
+        for b in unwrapped_boxes {
+            let ergs_box = StableCoinBox::new(&b)?;
+            boxes.push(ergs_box);
+        }
+        Ok(boxes)
     }
 }

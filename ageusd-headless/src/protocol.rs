@@ -68,7 +68,40 @@ impl StableCoinProtocol {
     }
 
     #[wasm_bindgen]
-    /// Action: Mint StableCoins by providing Ergs.
+    /// Action: Mint ReserveCoin by providing Ergs.
+    /// This is the WASM wrapper function for said Action.
+    pub fn w_action_mint_reservecoin(
+        &self,
+        amount_to_mint: u64,
+        user_address: P2PKAddressString,
+        transaction_fee: NanoErg,
+        current_height: BlockHeight,
+        oracle_box: &ErgUsdOraclePoolBox,
+        bank_box: &BankBox,
+        ergo_boxes: &ErgoBoxes,
+        implementor_address: ErgoAddressString,
+    ) -> Result<WUnsignedTransaction, JsValue> {
+        let ergs_boxes: Vec<ErgsBox> = ErgsBox::convert_from_ergo_boxes(ergo_boxes)
+            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+
+        let unsigned_tx = self
+            .action_mint_reservecoin(
+                amount_to_mint.clone(),
+                user_address,
+                transaction_fee,
+                current_height,
+                &oracle_box,
+                &bank_box,
+                &ergs_boxes,
+                implementor_address,
+            )
+            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+
+        Ok(unsigned_tx.into())
+    }
+
+
+    #[wasm_bindgen] /// Action: Mint StableCoins by providing Ergs.
     /// This is the WASM wrapper function for said Action.
     pub fn w_action_mint_stablecoin(
         &self,
@@ -101,31 +134,65 @@ impl StableCoinProtocol {
     }
 
     #[wasm_bindgen]
-    /// Action: Mint ReserveCoin by providing Ergs.
+    /// Action: Redeem ReserveCoins for Ergs.
     /// This is the WASM wrapper function for said Action.
-    pub fn w_action_mint_reservecoin(
+    pub fn w_action_redeem_reservecoin(
         &self,
-        amount_to_mint: u64,
+        amount_to_redeem: u64,
         user_address: P2PKAddressString,
         transaction_fee: NanoErg,
         current_height: BlockHeight,
         oracle_box: &ErgUsdOraclePoolBox,
         bank_box: &BankBox,
-        ergo_boxes: &ErgoBoxes,
+        rc_boxes: &ErgoBoxes,
         implementor_address: ErgoAddressString,
     ) -> Result<WUnsignedTransaction, JsValue> {
-        let ergs_boxes: Vec<ErgsBox> = ErgsBox::convert_from_ergo_boxes(ergo_boxes)
+        let rc_boxes: Vec<ReserveCoinBox> = ReserveCoinBox::convert_from_ergo_boxes(rc_boxes)
             .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
 
         let unsigned_tx = self
-            .action_mint_reservecoin(
-                amount_to_mint.clone(),
+            .action_redeem_reservecoin(
+                amount_to_redeem.clone(),
                 user_address,
                 transaction_fee,
                 current_height,
                 &oracle_box,
                 &bank_box,
-                &ergs_boxes,
+                &rc_boxes,
+                implementor_address,
+            )
+            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+
+        Ok(unsigned_tx.into())
+    }
+
+
+    #[wasm_bindgen]
+    /// Action: Redeem StableCoins for Ergs.
+    /// This is the WASM wrapper function for said Action.
+    pub fn w_action_redeem_stablecoin(
+        &self,
+        amount_to_redeem: u64,
+        user_address: P2PKAddressString,
+        transaction_fee: NanoErg,
+        current_height: BlockHeight,
+        oracle_box: &ErgUsdOraclePoolBox,
+        bank_box: &BankBox,
+        sc_boxes: &ErgoBoxes,
+        implementor_address: ErgoAddressString,
+    ) -> Result<WUnsignedTransaction, JsValue> {
+        let sc_boxes: Vec<StableCoinBox> = StableCoinBox::convert_from_ergo_boxes(sc_boxes)
+            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+
+        let unsigned_tx = self
+            .action_redeem_stablecoin(
+                amount_to_redeem.clone(),
+                user_address,
+                transaction_fee,
+                current_height,
+                &oracle_box,
+                &bank_box,
+                &sc_boxes,
                 implementor_address,
             )
             .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
