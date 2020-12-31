@@ -8,12 +8,13 @@ use crate::parameters::{
 };
 use crate::receipt::ReceiptBox;
 use ergo_headless_dapp_framework::{
-    create_candidate, ErgUsdOraclePoolBox, ErgsBox, TokensChangeBox, TxFeeBox, WrappedBox,
+    create_candidate, ErgUsdOraclePoolBox, ErgsBox, TokensChangeBox, TxFeeBox, WrappedBox, unsigned_transaction_to_assembler_spec,
 };
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg};
 use ergo_headless_dapp_framework::{ErgoAddressString, P2PKAddressString};
 use ergo_lib::chain::transaction::unsigned::UnsignedTransaction;
 use ergo_lib::chain::transaction::UnsignedInput;
+use ergo_lib::chain::ergo_box::BoxValue;
 use ergo_lib_wasm::box_coll::ErgoBoxes;
 use ergo_lib_wasm::transaction::UnsignedTransaction as WUnsignedTransaction;
 use std::result::Result;
@@ -65,6 +66,46 @@ impl StableCoinProtocol {
     #[wasm_bindgen(getter)]
     pub fn bank_nft_id(&self) -> String {
         BANK_NFT_ID.to_string()
+    }
+
+    #[wasm_bindgen]
+    /// Action: Mint ReserveCoin by providing Ergs.
+    /// This is the WASM Tx Assembler wrapper function for said Action.
+    pub fn w_assembler_mint_reservecoin(
+        &self,
+        amount_to_mint: u64,
+        user_address: P2PKAddressString,
+        transaction_fee: NanoErg,
+        current_height: BlockHeight,
+        oracle_box: &ErgUsdOraclePoolBox,
+        bank_box: &BankBox,
+        total_input_nano_ergs: NanoErg,
+        implementor_address: ErgoAddressString,
+    ) -> Result<String, JsValue> {
+
+        // Creating a placeholder box which holds an amount of nanoErgs equal to
+        // `total_input_nano_ergs` so the `UnsignedTransaction` can be created
+        // and then converted and used for an Assembler spec.
+        let mut placeholder_box = oracle_box.get_box().clone();
+        placeholder_box.value = BoxValue::new(total_input_nano_ergs).map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+
+        let ergs_boxes = vec![ErgsBox::new(&placeholder_box).map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?];
+
+        let unsigned_tx = self
+            .action_mint_reservecoin(
+                amount_to_mint.clone(),
+                user_address,
+                transaction_fee,
+                current_height,
+                &oracle_box,
+                &bank_box,
+                &ergs_boxes,
+                implementor_address,
+            )
+            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+
+
+        Ok(unsigned_transaction_to_assembler_spec(unsigned_tx, transaction_fee))
     }
 
     #[wasm_bindgen]
@@ -168,7 +209,7 @@ impl StableCoinProtocol {
 
 
     #[wasm_bindgen]
-    /// Action: Redeem StableCoins for Ergs.
+    /// Action: Redeem ReserveCoins for Ergs.
     /// This is the WASM wrapper function for said Action.
     pub fn w_action_redeem_stablecoin(
         &self,
@@ -254,20 +295,24 @@ impl StableCoinProtocol {
                 "The user must mint at least 1 ReserveCoin.".to_string(),
             ));
         }
-        // Verify that at least 1 ErgsBox was provided
-        if ergs_boxes.len() == 0 {
-            return Err(ProtocolError::InsufficientNumberOfBoxes());
-        }
-        // Verify that the provided ergs_boxes hold sufficient nanoErgs to
-        // cover the minting, the tx fee, and to have MIN_BOX_VALUE in the
-        // Receipt box.
-        if input_ergs_total
-            < (reservecoin_value_in_base + transaction_fee + self.min_box_value() + implementor_fee)
-        {
-            return Err(ProtocolError::InsufficientNanoErgs(
-                reservecoin_value_in_base,
-            ));
-        }
+
+        // Commented out these checks because they prevent Tx Assembler specs from being
+        // produced
+        //
+        // // Verify that at least 1 ErgsBox was provided
+        // if ergs_boxes.len() == 0 {
+        //     return Err(ProtocolError::InsufficientNumberOfBoxes());
+        // }
+        // // Verify that the provided ergs_boxes hold sufficient nanoErgs to
+        // // cover the minting, the tx fee, and to have MIN_BOX_VALUE in the
+        // // Receipt box.
+        // if input_ergs_total
+        //     < (reservecoin_value_in_base + transaction_fee + self.min_box_value() + implementor_fee)
+        // {
+        //     return Err(ProtocolError::InsufficientNanoErgs(
+        //         reservecoin_value_in_base,
+        //     ));
+        // }
 
         //
         // Setting Up The Tx Inputs
