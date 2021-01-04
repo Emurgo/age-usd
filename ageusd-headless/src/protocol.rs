@@ -328,23 +328,20 @@ impl StableCoinProtocol {
             ));
         }
 
-        // Commented out these checks because they prevent Tx Assembler specs from being
-        // produced
-        //
-        // // Verify that at least 1 ErgsBox was provided
-        // if ergs_boxes.len() == 0 {
-        //     return Err(ProtocolError::InsufficientNumberOfBoxes());
-        // }
-        // // Verify that the provided ergs_boxes hold sufficient nanoErgs to
-        // // cover the minting, the tx fee, and to have MIN_BOX_VALUE in the
-        // // Receipt box.
-        // if input_ergs_total
-        //     < (reservecoin_value_in_base + transaction_fee + self.min_box_value() + implementor_fee)
-        // {
-        //     return Err(ProtocolError::InsufficientNanoErgs(
-        //         reservecoin_value_in_base,
-        //     ));
-        // }
+        // Verify that at least 1 ErgsBox was provided
+        if ergs_boxes.len() == 0 {
+            return Err(ProtocolError::InsufficientNumberOfBoxes());
+        }
+        // Verify that the provided ergs_boxes hold sufficient nanoErgs to
+        // cover the minting, the tx fee, and to have MIN_BOX_VALUE in the
+        // Receipt box.
+        if input_ergs_total
+            < (reservecoin_value_in_base + transaction_fee + self.min_box_value() + implementor_fee)
+        {
+            return Err(ProtocolError::InsufficientNanoErgs(
+                reservecoin_value_in_base,
+            ));
+        }
 
         //
         // Setting Up The Tx Inputs
