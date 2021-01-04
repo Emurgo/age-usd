@@ -138,7 +138,11 @@ fn main() {
         println!("\nAvailable To Mint\n============");
         println!(
             "{} AgeUSD",
-            (bank_box.num_able_to_mint_stablecoin(&oracle_box)as f64 / 100.0)
+            (bank_box.num_able_to_mint_stablecoin(&oracle_box) as f64 / 100.0)
+        );
+        println!(
+            "{} ReserveCoins",
+            bank_box.num_able_to_mint_reservecoin(&oracle_box)
         );
 
         println!("\nUser Wallet Status\n======================");

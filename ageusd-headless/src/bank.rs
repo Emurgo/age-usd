@@ -155,6 +155,26 @@ impl BankBox {
         num_to_mint
     }
 
+    /// Number of ReserveCoins possible to be minted based off of current Reserve Ratio
+    #[wasm_bindgen]
+    pub fn num_able_to_mint_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+        let mut num_to_mint = 1;
+
+        loop {
+            let new_base_reserves = self.base_reserves() + self.base_cost_to_mint_reservecoin(num_to_mint, oracle_box);
+            let new_reserve_ratio =
+                reserve_ratio(new_base_reserves, self.num_circulating_stablecoins(), oracle_box.datapoint_in_cents());
+        // Break if New Reserve Ratio is above maximum, meaning cannot mint anymore
+        if new_reserve_ratio >= MAX_RESERVE_RATIO {
+            break
+        }
+        // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
+        num_to_mint += 100;
+        }
+
+        num_to_mint
+    }
+
     /// The total amount of nanoErgs which is needed to cover minting
     /// the provided number of ReserveCoins, cover tx fees, implementor
     /// fee, etc.
