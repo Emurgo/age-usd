@@ -6,7 +6,7 @@
 use crate::equations::reserve_ratio;
 use crate::error::ProtocolError;
 use crate::parameters::{
-    BANK_NFT_ID, FEE_PERCENT, IMPLEMENTOR_FEE_PERCENT, MIN_BOX_VALUE, RESERVECOIN_DEFAULT_PRICE,
+    BANK_NFT_ID, FEE_PERCENT, IMPLEMENTOR_FEE_PERCENT, MIN_BOX_VALUE, RESERVECOIN_DEFAULT_PRICE, MIN_RESERVE_RATIO, MAX_RESERVE_RATIO,
     RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID,
 };
 use ergo_headless_dapp_framework::{
@@ -133,6 +133,26 @@ impl BankBox {
             return RESERVECOIN_DEFAULT_PRICE;
         }
         self.equity(oracle_box) / self.num_circulating_reservecoins()
+    }
+
+    /// Number of StableCoins possible to be minted based off of current Reserve Ratio
+    #[wasm_bindgen]
+    pub fn num_able_to_mint_stablecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+        let mut num_to_mint = 1;
+
+        loop {
+            let new_base_reserves = self.base_reserves() + self.base_cost_to_mint_stablecoin(num_to_mint, oracle_box);
+            let new_reserve_ratio =
+                reserve_ratio(new_base_reserves, self.num_circulating_stablecoins() + num_to_mint, oracle_box.datapoint_in_cents());
+        // Break if New Reserve Ratio is below minimum, meaning cannot mint anymore
+        if new_reserve_ratio < MIN_RESERVE_RATIO {
+            break
+        }
+        // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
+        num_to_mint +=1;
+        }
+
+        num_to_mint
     }
 
     /// The total amount of nanoErgs which is needed to cover minting
