@@ -127,12 +127,18 @@ fn main() {
             nano_erg_to_erg(bank_box.base_reserves())
         );
         println!(
-            "Liabilities: {} Ergs",
+            "AgeUSD Liabilities: {} Ergs",
             nano_erg_to_erg(bank_box.liabilities(&oracle_box))
         );
         println!(
             "Equity: {} Ergs",
             nano_erg_to_erg(bank_box.equity(&oracle_box))
+        );
+
+        println!("\nAvailable To Mint\n============");
+        println!(
+            "{} AgeUSD",
+            (bank_box.num_able_to_mint_stablecoin(&oracle_box)as f64 / 100.0)
         );
 
         println!("\nUser Wallet Status\n======================");

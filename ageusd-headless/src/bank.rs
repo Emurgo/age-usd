@@ -145,7 +145,7 @@ impl BankBox {
             let new_reserve_ratio =
                 reserve_ratio(new_base_reserves, self.num_circulating_stablecoins() + num_to_mint, oracle_box.datapoint_in_cents());
         // Break if New Reserve Ratio is below minimum, meaning cannot mint anymore
-        if new_reserve_ratio < MIN_RESERVE_RATIO {
+        if new_reserve_ratio <= MIN_RESERVE_RATIO {
             break
         }
         // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
