@@ -6,8 +6,8 @@
 use crate::equations::reserve_ratio;
 use crate::error::ProtocolError;
 use crate::parameters::{
-    BANK_NFT_ID, FEE_PERCENT, IMPLEMENTOR_FEE_PERCENT, MIN_BOX_VALUE, RESERVECOIN_DEFAULT_PRICE, MIN_RESERVE_RATIO, MAX_RESERVE_RATIO,
-    RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID,
+    BANK_NFT_ID, FEE_PERCENT, IMPLEMENTOR_FEE_PERCENT, MAX_RESERVE_RATIO, MIN_BOX_VALUE,
+    MIN_RESERVE_RATIO, RESERVECOIN_DEFAULT_PRICE, RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID,
 };
 use ergo_headless_dapp_framework::{
     create_candidate, BoxSpec, ExplorerFindable, HeadlessDappError, SpecBox, SpecifiedBox,
@@ -140,16 +140,26 @@ impl BankBox {
     pub fn num_able_to_mint_stablecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
         let mut num_to_mint = 1;
 
-        loop {
-            let new_base_reserves = self.base_reserves() + self.base_cost_to_mint_stablecoin(num_to_mint, oracle_box);
-            let new_reserve_ratio =
-                reserve_ratio(new_base_reserves, self.num_circulating_stablecoins() + num_to_mint, oracle_box.datapoint_in_cents());
-        // Break if New Reserve Ratio is below minimum, meaning cannot mint anymore
-        if new_reserve_ratio <= MIN_RESERVE_RATIO {
-            break
+        // Add self-adjusting increment to increase efficiency of function
+        let mut increment_amount = 1;
+        if self.num_circulating_stablecoins() > 1000000 {
+            increment_amount = self.num_circulating_reservecoins() / 10000;
         }
-        // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
-        num_to_mint +=1;
+
+        loop {
+            let new_base_reserves =
+                self.base_reserves() + self.base_cost_to_mint_stablecoin(num_to_mint, oracle_box);
+            let new_reserve_ratio = reserve_ratio(
+                new_base_reserves,
+                self.num_circulating_stablecoins() + num_to_mint,
+                oracle_box.datapoint_in_cents(),
+            );
+            // Break if New Reserve Ratio is below minimum, meaning cannot mint anymore
+            if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                break;
+            }
+            // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
+            num_to_mint += increment_amount;
         }
 
         num_to_mint
@@ -160,16 +170,26 @@ impl BankBox {
     pub fn num_able_to_mint_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
         let mut num_to_mint = 1;
 
-        loop {
-            let new_base_reserves = self.base_reserves() + self.base_cost_to_mint_reservecoin(num_to_mint, oracle_box);
-            let new_reserve_ratio =
-                reserve_ratio(new_base_reserves, self.num_circulating_stablecoins(), oracle_box.datapoint_in_cents());
-        // Break if New Reserve Ratio is above maximum, meaning cannot mint anymore
-        if new_reserve_ratio >= MAX_RESERVE_RATIO {
-            break
+        // Add self-adjusting increment to increase efficiency of function
+        let mut increment_amount = 1;
+        if self.num_circulating_reservecoins() > 1000 {
+            increment_amount = self.num_circulating_reservecoins() / 100;
         }
-        // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
-        num_to_mint += 100;
+
+        loop {
+            let new_base_reserves =
+                self.base_reserves() + self.base_cost_to_mint_reservecoin(num_to_mint, oracle_box);
+            let new_reserve_ratio = reserve_ratio(
+                new_base_reserves,
+                self.num_circulating_stablecoins(),
+                oracle_box.datapoint_in_cents(),
+            );
+            // Break if New Reserve Ratio is above maximum, meaning cannot mint anymore
+            if new_reserve_ratio >= MAX_RESERVE_RATIO {
+                break;
+            }
+            // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
+            num_to_mint += increment_amount;
         }
 
         num_to_mint
