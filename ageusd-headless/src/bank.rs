@@ -203,7 +203,7 @@ impl BankBox {
                 loop {
                     let new_reserve_ratio =
                         self.mint_reservecoin_reserve_ratio(oracle_box, num_to_mint);
-                    if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                    if new_reserve_ratio >= MAX_RESERVE_RATIO {
                         num_to_mint -= 1;
                         break;
                     }
