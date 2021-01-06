@@ -147,15 +147,19 @@ impl BankBox {
         }
 
         loop {
-            let new_base_reserves =
-                self.base_reserves() + self.base_cost_to_mint_stablecoin(num_to_mint, oracle_box);
-            let new_reserve_ratio = reserve_ratio(
-                new_base_reserves,
-                self.num_circulating_stablecoins() + num_to_mint,
-                oracle_box.datapoint_in_cents(),
-            );
-            // Break if New Reserve Ratio is below minimum, meaning cannot mint anymore
+            let new_reserve_ratio = self.mint_stablecoin_reserve_ratio(oracle_box, num_to_mint);
+            // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
             if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                num_to_mint -= increment_amount + 1;
+                loop {
+                    let new_reserve_ratio =
+                        self.mint_stablecoin_reserve_ratio(oracle_box, num_to_mint);
+                    if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                        num_to_mint -= 1;
+                        break;
+                    }
+                    num_to_mint += 1;
+                }
                 break;
             }
             // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
@@ -163,6 +167,21 @@ impl BankBox {
         }
 
         num_to_mint
+    }
+
+    /// Acquire the new reserve ratio after minting `num_to_mint` Stablecoins
+    fn mint_stablecoin_reserve_ratio(
+        &self,
+        oracle_box: &ErgUsdOraclePoolBox,
+        num_to_mint: u64,
+    ) -> u64 {
+        let new_base_reserves =
+            self.base_reserves() + self.base_cost_to_mint_stablecoin(num_to_mint, oracle_box);
+        reserve_ratio(
+            new_base_reserves,
+            self.num_circulating_stablecoins() + num_to_mint,
+            oracle_box.datapoint_in_cents(),
+        )
     }
 
     /// Number of ReserveCoins possible to be minted based off of current Reserve Ratio
@@ -177,15 +196,19 @@ impl BankBox {
         }
 
         loop {
-            let new_base_reserves =
-                self.base_reserves() + self.base_cost_to_mint_reservecoin(num_to_mint, oracle_box);
-            let new_reserve_ratio = reserve_ratio(
-                new_base_reserves,
-                self.num_circulating_stablecoins(),
-                oracle_box.datapoint_in_cents(),
-            );
-            // Break if New Reserve Ratio is above maximum, meaning cannot mint anymore
-            if new_reserve_ratio >= MAX_RESERVE_RATIO {
+            let new_reserve_ratio = self.mint_reservecoin_reserve_ratio(oracle_box, num_to_mint);
+            // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
+            if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                num_to_mint -= increment_amount + 1;
+                loop {
+                    let new_reserve_ratio =
+                        self.mint_reservecoin_reserve_ratio(oracle_box, num_to_mint);
+                    if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                        num_to_mint -= 1;
+                        break;
+                    }
+                    num_to_mint += 1;
+                }
                 break;
             }
             // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
@@ -193,6 +216,21 @@ impl BankBox {
         }
 
         num_to_mint
+    }
+
+    /// Acquire the new reserve ratio after minting `num_to_mint` Reservecoins
+    fn mint_reservecoin_reserve_ratio(
+        &self,
+        oracle_box: &ErgUsdOraclePoolBox,
+        num_to_mint: u64,
+    ) -> u64 {
+        let new_base_reserves =
+            self.base_reserves() + self.base_cost_to_mint_reservecoin(num_to_mint, oracle_box);
+        reserve_ratio(
+            new_base_reserves,
+            self.num_circulating_stablecoins(),
+            oracle_box.datapoint_in_cents(),
+        )
     }
 
     /// The total amount of nanoErgs which is needed to cover minting
