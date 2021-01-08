@@ -2,14 +2,15 @@
 use crate::bank::BankBox;
 use crate::error::ProtocolError;
 use crate::input_boxes::{ReserveCoinBox, StableCoinBox};
-use crate::parameters::MIN_BOX_VALUE;
+use crate::parameters::{MIN_BOX_VALUE, RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID};
 use ergo_headless_dapp_framework::{
     create_candidate, find_and_sum_other_tokens, WrapBox, WrappedBox,
 };
-use ergo_headless_dapp_framework::{BlockHeight, NanoErg, P2PKAddressString, TokensChangeBox};
+use ergo_headless_dapp_framework::{
+    encoding::build_token, BlockHeight, NanoErg, P2PKAddressString,
+};
 use ergo_lib::chain::ergo_box::{ErgoBox, ErgoBoxCandidate};
-use ergo_lib::chain::token::{Token, TokenAmount};
-use std::convert::TryFrom;
+use ergo_lib::chain::token::Token;
 
 /// The struct which represents the `Receipt` stage.
 #[derive(Debug, Clone, WrapBox)]
@@ -30,7 +31,7 @@ impl ReceiptBox {
         input_ergs_total: NanoErg,
     ) -> Result<ErgoBoxCandidate, ProtocolError> {
         // Define the ReserveCoin token
-        let rb_reservecoin_token = new_reservecoin_token(amount_to_mint, bank_box)?;
+        let rb_reservecoin_token = new_reservecoin_token(amount_to_mint)?;
         // Define the Receipt Box tokens
         let rb_tokens = vec![rb_reservecoin_token];
 
@@ -68,7 +69,7 @@ impl ReceiptBox {
         input_ergs_total: NanoErg,
     ) -> Result<ErgoBoxCandidate, ProtocolError> {
         // Define the StableCoin token
-        let rb_stablecoin_token = new_stablecoin_token(amount_to_mint, bank_box)?;
+        let rb_stablecoin_token = new_stablecoin_token(amount_to_mint)?;
         // Define the Receipt Box tokens
         let rb_tokens = vec![rb_stablecoin_token];
 
@@ -129,7 +130,7 @@ impl ReceiptBox {
         if rc_boxes_total_rc > amount_to_redeem {
             // Define the StableCoin token
             let amount = rc_boxes_total_rc - amount_to_redeem;
-            let new_rc_token = new_reservecoin_token(amount, bank_box)?;
+            let new_rc_token = new_reservecoin_token(amount)?;
             rb_tokens.push(new_rc_token)
         }
         // Find all other tokens held in user-provided input boxes
@@ -183,7 +184,7 @@ impl ReceiptBox {
         if sc_boxes_total_sc > amount_to_redeem {
             // Define the StableCoin token
             let amount = sc_boxes_total_sc - amount_to_redeem;
-            let new_sc_token = new_stablecoin_token(amount, bank_box)?;
+            let new_sc_token = new_stablecoin_token(amount)?;
             rb_tokens.push(new_sc_token)
         }
         // Find all other tokens held in user-provided input boxes
@@ -203,25 +204,11 @@ impl ReceiptBox {
 }
 
 // Creates a new StableCoin token with a custom amount
-fn new_stablecoin_token(amount: u64, bank_box: &BankBox) -> Result<Token, ProtocolError> {
-    let bank_stablecoin_token = bank_box.get_box().tokens[0].clone();
-    let token_amount = TokenAmount::try_from(amount)
-        .map_err(|_| ProtocolError::Other("Invalid Token Amount".to_string()))?;
-    let stablecoin_token = Token {
-        token_id: bank_stablecoin_token.token_id.clone(),
-        amount: token_amount,
-    };
-    Ok(stablecoin_token)
+fn new_stablecoin_token(amount: u64) -> Result<Token, ProtocolError> {
+    Ok(build_token(STABLECOIN_TOKEN_ID, amount)?)
 }
 
 // Creates a new ReserveCoin token with a custom amount
-fn new_reservecoin_token(amount: u64, bank_box: &BankBox) -> Result<Token, ProtocolError> {
-    let bank_reservecoin_token = bank_box.get_box().tokens[1].clone();
-    let token_amount = TokenAmount::try_from(amount)
-        .map_err(|_| ProtocolError::Other("Invalid Token Amount".to_string()))?;
-    let stablecoin_token = Token {
-        token_id: bank_reservecoin_token.token_id.clone(),
-        amount: token_amount,
-    };
-    Ok(stablecoin_token)
+fn new_reservecoin_token(amount: u64) -> Result<Token, ProtocolError> {
+    Ok(build_token(RESERVECOIN_TOKEN_ID, amount)?)
 }
