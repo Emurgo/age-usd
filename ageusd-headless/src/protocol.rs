@@ -8,13 +8,13 @@ use crate::parameters::{
 };
 use crate::receipt::ReceiptBox;
 use ergo_headless_dapp_framework::{
-    create_candidate, ErgUsdOraclePoolBox, ErgsBox, TokensChangeBox, TxFeeBox, WrappedBox, TxAssemblerSpecBuilder,
+    create_candidate, ErgUsdOraclePoolBox, ErgsBox, TokensChangeBox, TxAssemblerSpecBuilder,
+    TxFeeBox, WrappedBox,
 };
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg};
 use ergo_headless_dapp_framework::{ErgoAddressString, P2PKAddressString};
 use ergo_lib::chain::transaction::unsigned::UnsignedTransaction;
 use ergo_lib::chain::transaction::UnsignedInput;
-use ergo_lib::chain::ergo_box::BoxValue;
 use ergo_lib_wasm::box_coll::ErgoBoxes;
 use ergo_lib_wasm::transaction::UnsignedTransaction as WUnsignedTransaction;
 use std::result::Result;
@@ -86,7 +86,8 @@ impl StableCoinProtocol {
         // `total_input_nano_ergs` so the `UnsignedTransaction` can be created
         // and then converted and used for an Assembler spec.
         let mut ergs_boxes = vec![];
-        if let Some(placeholder_box) = TxAssemblerSpecBuilder::create_placeholder_ergs_box(total_input_nano_ergs)
+        if let Some(placeholder_box) =
+            TxAssemblerSpecBuilder::create_placeholder_ergs_box(total_input_nano_ergs)
         {
             ergs_boxes.push(placeholder_box)
         }
@@ -105,7 +106,6 @@ impl StableCoinProtocol {
         Ok(TxAssemblerSpecBuilder::new(unsigned_tx).build_assembler_spec(transaction_fee))
     }
 
-
     #[wasm_bindgen]
     /// Action: Mint StableCoin by providing Ergs.
     /// This is the WASM Tx Assembler wrapper function for said Action.
@@ -121,7 +121,8 @@ impl StableCoinProtocol {
         implementor_address: ErgoAddressString,
     ) -> Result<String, JsValue> {
         let mut ergs_boxes = vec![];
-        if let Some(placeholder_box) = TxAssemblerSpecBuilder::create_placeholder_ergs_box(total_input_nano_ergs)
+        if let Some(placeholder_box) =
+            TxAssemblerSpecBuilder::create_placeholder_ergs_box(total_input_nano_ergs)
         {
             ergs_boxes.push(placeholder_box)
         }
@@ -134,6 +135,43 @@ impl StableCoinProtocol {
                 &oracle_box,
                 &bank_box,
                 &ergs_boxes,
+                implementor_address,
+            )
+            .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
+        Ok(TxAssemblerSpecBuilder::new(unsigned_tx).build_assembler_spec(transaction_fee))
+    }
+
+    #[wasm_bindgen]
+    /// Action: Redeem ReserveCoin.
+    /// This is the WASM Tx Assembler wrapper function for said Action.
+    pub fn w_assembler_redeem_reservecoin(
+        &self,
+        amount_being_redeemed: u64,
+        user_address: P2PKAddressString,
+        transaction_fee: NanoErg,
+        current_height: BlockHeight,
+        oracle_box: &ErgUsdOraclePoolBox,
+        bank_box: &BankBox,
+        assembler_rc_box: ReserveCoinBox,
+        implementor_address: ErgoAddressString,
+    ) -> Result<String, JsValue> {
+        // Creating a placeholder box which holds an amount of ReserveCoins equal to
+        // `amount_being_redeemed` so the `UnsignedTransaction` can be created
+        // and then converted and used for an Assembler spec.
+        let mut boxes = vec![];
+        if let Some(placeholder_box) = ReserveCoinBox::create_placeholder_box(amount_being_redeemed)
+        {
+            boxes.push(placeholder_box)
+        }
+        let unsigned_tx = self
+            .action_redeem_reservecoin(
+                amount_being_redeemed,
+                user_address,
+                transaction_fee,
+                current_height,
+                &oracle_box,
+                &bank_box,
+                &boxes,
                 implementor_address,
             )
             .map_err(|e| JsValue::from_str(&format! {"{:?}", e}))?;
@@ -173,8 +211,8 @@ impl StableCoinProtocol {
         Ok(unsigned_tx.into())
     }
 
-
-    #[wasm_bindgen] /// Action: Mint StableCoins by providing Ergs.
+    #[wasm_bindgen]
+    /// Action: Mint StableCoins by providing Ergs.
     /// This is the WASM wrapper function for said Action.
     pub fn w_action_mint_stablecoin(
         &self,
@@ -238,7 +276,6 @@ impl StableCoinProtocol {
 
         Ok(unsigned_tx.into())
     }
-
 
     #[wasm_bindgen]
     /// Action: Redeem ReserveCoins for Ergs.
