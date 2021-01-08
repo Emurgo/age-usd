@@ -9,11 +9,11 @@ use crate::parameters::{
     BANK_NFT_ID, FEE_PERCENT, IMPLEMENTOR_FEE_PERCENT, MAX_RESERVE_RATIO, MIN_BOX_VALUE,
     MIN_RESERVE_RATIO, RESERVECOIN_DEFAULT_PRICE, RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID,
 };
+use ergo_headless_dapp_framework::encoding::{build_token, unwrap_long};
 use ergo_headless_dapp_framework::{
-    create_candidate, BoxSpec, ExplorerFindable, HeadlessDappError, SpecBox, SpecifiedBox,
-    TokenSpec, WASMBox, WrapBox, WrappedBox,
+    create_candidate, BoxSpec, ErgUsdOraclePoolBox, ExplorerFindable, HeadlessDappError, SpecBox,
+    SpecifiedBox, TokenSpec, WASMBox, WrapBox, WrappedBox,
 };
-use ergo_headless_dapp_framework::{encoding::unwrap_long, ErgUsdOraclePoolBox};
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg, P2SAddressString};
 use ergo_lib::chain::ergo_box::{ErgoBox, ErgoBoxCandidate};
 use ergo_lib::chain::token::{Token, TokenAmount};
@@ -391,13 +391,10 @@ impl BankBox {
         let stablecoin_tokens = self.tokens()[0].clone();
         // Specify ReserveCoins
         let bank_reservecoin_token_in = self.tokens()[1].clone();
-        let token_amount =
-            TokenAmount::try_from(u64::from(bank_reservecoin_token_in.amount) - amount_to_mint)
-                .map_err(|_| ProtocolError::Other("Invalid Token Amount".to_string()))?;
-        let reservecoin_tokens = Token {
-            token_id: bank_reservecoin_token_in.token_id.clone(),
-            amount: token_amount,
-        };
+        let reservecoin_tokens = build_token(
+            RESERVECOIN_TOKEN_ID,
+            u64::from(bank_reservecoin_token_in.amount) - amount_to_mint,
+        )?;
         let nft_token = self.tokens()[2].clone();
         let obb_tokens = vec![stablecoin_tokens, reservecoin_tokens, nft_token];
         // Specify the registers in the Bank Box
@@ -432,13 +429,10 @@ impl BankBox {
         input_bank_box: &BankBox,
     ) -> Result<ErgoBoxCandidate, ProtocolError> {
         let bank_stablecoin_token_in = self.tokens()[0].clone();
-        let token_amount =
-            TokenAmount::try_from(u64::from(bank_stablecoin_token_in.amount) - amount_to_mint)
-                .map_err(|_| ProtocolError::Other("Invalid Token Amount".to_string()))?;
-        let stablecoin_tokens = Token {
-            token_id: bank_stablecoin_token_in.token_id.clone(),
-            amount: token_amount,
-        };
+        let stablecoin_tokens = build_token(
+            STABLECOIN_TOKEN_ID,
+            u64::from(bank_stablecoin_token_in.amount) - amount_to_mint,
+        )?;
         let reservecoin_tokens = self.tokens()[1].clone();
         let nft_token = self.tokens()[2].clone();
         let obb_tokens = vec![stablecoin_tokens, reservecoin_tokens, nft_token];
@@ -477,13 +471,10 @@ impl BankBox {
         let stablecoin_tokens = self.tokens()[0].clone();
         // Specifying ReserveCoins
         let bank_reservecoin_token_in = self.tokens()[1].clone();
-        let token_amount =
-            TokenAmount::try_from(u64::from(bank_reservecoin_token_in.amount) + amount_to_redeem)
-                .map_err(|_| ProtocolError::Other("Invalid Token Amount".to_string()))?;
-        let reservecoin_tokens = Token {
-            token_id: bank_reservecoin_token_in.token_id.clone(),
-            amount: token_amount,
-        };
+        let reservecoin_tokens = build_token(
+            RESERVECOIN_TOKEN_ID,
+            u64::from(bank_reservecoin_token_in.amount) + amount_to_redeem,
+        )?;
         let nft_token = self.tokens()[2].clone();
         let obb_tokens = vec![stablecoin_tokens, reservecoin_tokens, nft_token];
         // Specify the registers in the Bank Box
@@ -518,13 +509,10 @@ impl BankBox {
         input_bank_box: &BankBox,
     ) -> Result<ErgoBoxCandidate, ProtocolError> {
         let bank_stablecoin_token_in = self.tokens()[0].clone();
-        let token_amount =
-            TokenAmount::try_from(u64::from(bank_stablecoin_token_in.amount) + amount_to_redeem)
-                .map_err(|_| ProtocolError::Other("Invalid Token Amount".to_string()))?;
-        let stablecoin_tokens = Token {
-            token_id: bank_stablecoin_token_in.token_id.clone(),
-            amount: token_amount,
-        };
+        let stablecoin_tokens = build_token(
+            STABLECOIN_TOKEN_ID,
+            u64::from(bank_stablecoin_token_in.amount) + amount_to_redeem,
+        )?;
         let reservecoin_tokens = self.tokens()[1].clone();
         let nft_token = self.tokens()[2].clone();
         let obb_tokens = vec![stablecoin_tokens, reservecoin_tokens, nft_token];
