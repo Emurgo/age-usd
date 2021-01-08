@@ -1,13 +1,19 @@
 /// This file holds structs that implement `SpecifiedBox` which are to be
 /// used as inputs to Actions.
 use crate::error::{ProtocolError, Result};
-use crate::parameters::{RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID};
+use crate::parameters::{MIN_BOX_VALUE, RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID};
 pub use ergo_headless_dapp_framework::box_traits::{ExplorerFindable, SpecifiedBox, WrappedBox};
 pub use ergo_headless_dapp_framework::specified_boxes::{ErgUsdOraclePoolBox, ErgsBox};
-use ergo_headless_dapp_framework::{BoxSpec, HeadlessDappError, SpecBox, WASMBox, WrapBox};
-use ergo_lib::chain::ergo_box::ErgoBox;
-use ergo_lib_wasm::ergo_box::ErgoBox as WErgoBox;
+use ergo_headless_dapp_framework::{
+    encoding::{build_token, deserialize_p2s_to_ergo_tree},
+    BoxSpec, HeadlessDappError, SpecBox, WASMBox, WrapBox,
+};
+use ergo_lib::chain::ergo_box::{BoxValue, ErgoBox, NonMandatoryRegisters};
+use ergo_lib::chain::token::{Token, TokenAmount};
+use ergo_lib::chain::transaction::TxId;
 use ergo_lib_wasm::box_coll::ErgoBoxes;
+use ergo_lib_wasm::ergo_box::ErgoBox as WErgoBox;
+use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 
 /// A predicated box which holds ReserveCoins
@@ -76,6 +82,26 @@ impl ReserveCoinBox {
         }
         Ok(boxes)
     }
+    /// Create a placeholder box.
+    /// This is useful for using with protocols as a placeholder so that
+    /// an assembler spec can be created (and this placeholder box thrown out
+    /// and replaced with the user's actual input box from the assembler)
+    pub fn create_placeholder_box(num_reservecoins: u64) -> Option<ReserveCoinBox> {
+        let placeholder_address = "2iHkR7CWvD1R4j1yZg5bkeDRQavjAaVPeTDFGGLZduHyfWMuYpmhHocX8GJoaieTx78FntzJbCBVL6rf96ocJoZdmWBL2fci7NqWgAirppPQmZ7fN9V6z13Ay6brPriBKYqLp1bT2Fk4FkFLCfdPpe".to_string();
+        let ergo_tree = deserialize_p2s_to_ergo_tree(placeholder_address).ok()?;
+        let box_value = BoxValue::new(MIN_BOX_VALUE).ok()?;
+        let token = build_token(RESERVECOIN_TOKEN_ID, num_reservecoins).ok()?;
+        let placeholder_box = ErgoBox::new(
+            box_value,
+            ergo_tree,
+            vec![token],
+            NonMandatoryRegisters::empty(),
+            0,
+            TxId::zero(),
+            0,
+        );
+        ReserveCoinBox::new(&placeholder_box).ok()
+    }
 }
 
 /// A predicated box which holds StableCoins
@@ -143,5 +169,26 @@ impl StableCoinBox {
             boxes.push(ergs_box);
         }
         Ok(boxes)
+    }
+
+    /// Create a placeholder box.
+    /// This is useful for using with protocols as a placeholder so that
+    /// an assembler spec can be created (and this placeholder box thrown out
+    /// and replaced with the user's actual input box from the assembler)
+    pub fn create_placeholder_box(num_stablecoins: u64) -> Option<StableCoinBox> {
+        let placeholder_address = "2iHkR7CWvD1R4j1yZg5bkeDRQavjAaVPeTDFGGLZduHyfWMuYpmhHocX8GJoaieTx78FntzJbCBVL6rf96ocJoZdmWBL2fci7NqWgAirppPQmZ7fN9V6z13Ay6brPriBKYqLp1bT2Fk4FkFLCfdPpe".to_string();
+        let ergo_tree = deserialize_p2s_to_ergo_tree(placeholder_address).ok()?;
+        let box_value = BoxValue::new(MIN_BOX_VALUE).ok()?;
+        let token = build_token(STABLECOIN_TOKEN_ID, num_stablecoins).ok()?;
+        let placeholder_box = ErgoBox::new(
+            box_value,
+            ergo_tree,
+            vec![token],
+            NonMandatoryRegisters::empty(),
+            0,
+            TxId::zero(),
+            0,
+        );
+        StableCoinBox::new(&placeholder_box).ok()
     }
 }
