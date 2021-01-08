@@ -1,4 +1,4 @@
-use ergo_headless_dapp_framework::HeadlessDappError;
+use ergo_headless_dapp_framework::{encoding::EncodingError, HeadlessDappError};
 use ergo_headless_dapp_framework::{NanoErg, P2PKAddressString, P2SAddressString};
 use thiserror::Error;
 
@@ -44,4 +44,6 @@ pub enum ProtocolError {
     Other(String),
     #[error(transparent)]
     ErgoProtocolFramework(#[from] HeadlessDappError),
+    #[error(transparent)]
+    EncodingError(#[from] EncodingError<String>),
 }
