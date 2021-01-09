@@ -1,6 +1,6 @@
-package stablecoin.v3
+package stablecoin.v4
 
-private[v3] object Contracts {
+private[v4] object Contracts {
   val oraclePoolNFT = "0fb1eca4646950743bc5a8c341c16871a0ad9b4077e3b276bf93855d51a042d1"
 
   val updateNFT = "" // quantity 1
@@ -136,10 +136,9 @@ private[v3] object Contracts {
        |    validDataInput
        |  } else false
        |
-       |  sigmaProp(isExchange || INPUTS(0).tokens(0)._1 == updateNFT)
+       |  sigmaProp(isExchange || INPUTS(0).tokens(0)._1 == updateNFT && CONTEXT.dataInputs.size == 0)
        |}
        |""".stripMargin
-
 
   val minVotes: Int = 5
 
@@ -209,4 +208,5 @@ private[v3] object Contracts {
        |  )
        |}
        |""".stripMargin
+
 }
