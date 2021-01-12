@@ -233,6 +233,56 @@ impl BankBox {
         )
     }
 
+    /// Number of ReserveCoins possible to be redeemed based off of current Reserve Ratio
+    #[wasm_bindgen]
+    pub fn num_able_to_redeem_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+        let mut num_to_redeem = 1;
+
+        // Add self-adjusting increment to increase efficiency of function
+        let mut increment_amount = 1;
+        if self.num_circulating_reservecoins() > 1000 {
+            increment_amount = self.num_circulating_reservecoins() / 100;
+        }
+
+        loop {
+            let new_reserve_ratio =
+                self.redeem_reservecoin_reserve_ratio(oracle_box, num_to_redeem);
+            // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
+            if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                num_to_redeem -= increment_amount + 1;
+                loop {
+                    let new_reserve_ratio =
+                        self.redeem_reservecoin_reserve_ratio(oracle_box, num_to_redeem);
+                    if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                        num_to_redeem -= 1;
+                        break;
+                    }
+                    num_to_redeem += 1;
+                }
+                break;
+            }
+            // If still above Minimum Reserve Ratio, increase the `num_to_redeem` and test again
+            num_to_redeem += increment_amount;
+        }
+
+        num_to_redeem
+    }
+
+    /// Acquire the new reserve ratio after minting `num_to_redeem` Reservecoins
+    fn redeem_reservecoin_reserve_ratio(
+        &self,
+        oracle_box: &ErgUsdOraclePoolBox,
+        num_to_redeem: u64,
+    ) -> u64 {
+        let new_base_reserves =
+            self.base_reserves() - self.base_cost_to_mint_reservecoin(num_to_redeem, oracle_box);
+        reserve_ratio(
+            new_base_reserves,
+            self.num_circulating_stablecoins(),
+            oracle_box.datapoint_in_cents(),
+        )
+    }
+
     /// The total amount of nanoErgs which is needed to cover minting
     /// the provided number of ReserveCoins, cover tx fees, implementor
     /// fee, etc.
