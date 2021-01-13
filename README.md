@@ -4,20 +4,21 @@ AgeUSD is a novel crypto-backed stablecoin protocol that has been created in joi
 
 AgeUSD does not rely on CDPs (collateralized debt positions) as is the current popular crypto-backed stablecoin design pattern. This was a conscious design decision made due to the fragility of CDP-based protocols in the face of sharp volatility and/or blockchain congestion. This was epitomized during [Black Thursday](https://forum.makerdao.com/t/black-thursday-response-thread/1433) where MakerDAO CDPs were triggered for liquidation due to volatility, and then sold off for $0 due to blockchain congestion which prevented others from bidding.
 
-Thanks to it's design, the scenario that happened on Black Thursday is *not possible* for the AgeUSD protocol. Without CDPs, we do not have liquidation events nor the requirement for users to perform transactions to ensure that the liquidations actually work properly (rather than allowing a bad actor to steal funds away from the protocol). These are inherent vulnerable facets of using CDPs for minting stablecoins, and as such expose more risk to the end users.
+Thanks to it's design, the scenario that happened on Black Thursday is _not possible_ for the AgeUSD protocol. Without CDPs, we do not have liquidation events nor the requirement for users to perform transactions to ensure that the liquidations actually work properly (rather than allowing a bad actor to steal funds away from the protocol). These are inherent vulnerable facets of using CDPs for minting stablecoins, and as such expose more risk to the end users.
 
 The AgeUSD protocol has been designed to shrink the surface area of where such problems may arise. The goal is trying to automate as much as possible within the math of the protocol itself rather than relying on dynamic transaction posting which is liable to being broken under blockchain congestion. This isn't to say the AgeUSD solves all stablecoin problems, but it is an attempt at creating a higher assurance alternative to the current trends in the crypto-sphere.
 
 ## Table of Contents
+
 1. [How Does The AgeUSD Protocol Work?](#how-does-the-ageusd-protocol-work-)
 2. [Fees](#fees)
 3. [Traversing This Repository](#traversing-this-repository)
 4. [Related Works](#related-works)
 
-
-
 ## How Does The AgeUSD Protocol Work?
+
 At it's core the AgeUSD protocol is quite simple to understand. There are two kinds of parties who interact with the protocol:
+
 1. Reserve Providers
 2. AgeUSD Users
 
@@ -33,8 +34,8 @@ This provides individuals with the ability to choose to either go "long" Ergs (v
 
 For more detailed example scenarios check out the [AgeUSD stories](docs/stories.md) document.
 
-
 ## Fees
+
 The AgeUSD protocol fee parameter defaults are currently set at:
 
 1. 1% Protocol Fee
@@ -46,26 +47,26 @@ The frontend implementor fee is the fee that gets paid out to the frontend imple
 
 These fees are adjustable by the deployer of the AgeUSD protocol on-chain, and as such are simply recommended defaults.
 
-
 ## Traversing This Repository
+
 This repo holds the specifications, smart contracts, and off-chain code(headless dApp) for the AgeUSD protocol.
 
-
 ### AgeUSD Specs
-[The AgeUSD Specs](ageusd-specs)
-...
 
+[The AgeUSD Specs](ageusd-specs) are the high-level specifications of the AgeUSD protocol in the EUTXO model on top of Ergo. These specs start from `v0.1` showing off the addition of various features over the course of the design process of the AgeUSD protocol.
 
 ### AgeUSD Smart Contracts
-[The AgeUSD Smart Contracts](ageusd-smart-contracts)
+
+[The AgeUSD Smart Contracts](ageusd-smart-contracts) are written in ErgoScript and also start from `v0.1` and increase upwards as new features were added or bugs were fixed.
 
 ...
 
-
 ### AgeUSD Headless dApp
+
 [The AgeUSD Headless dApp](ageusd-headless) is the off-chain code which provides developers with a pure and portable interface for both reading the current state of a deployed instance of AgeUSD on-chain, performing Actions in the protocol, as well as containing a few helper methods to make the lives of front-end implementors easier.
 
 Readable AgeUSD State:
+
 - Base Reserves
 - Liabilities
 - Equity
@@ -74,28 +75,25 @@ Readable AgeUSD State:
 - StableCoin Nominal Price
 - ReserveCoin Nominal Price
 
-
 Actions:
+
 - Mint StableCoin
 - Mint ReserveCoin
 - Redeem StableCoin
 - Redeem ReserveCoin
 
-
 Helper Methods:
+
 - Cost To Mint X StableCoins
 - Cost To Mint Y ReserveCoins
 - Amount Received From Redeeming X StableCoins
 - Amount Received From Redeeming Y ReserveCoins
 
-
-
 ### AgeUSD CLI
+
 [The AgeUSD CLI](ageusd-cli) uses the AgeUSD Headless dApp and implements a command line interface for interacting with a deployment of the protocol on-chain. The CLI use an Ergo Node for UTXO-set scanning to find the required boxes + posting the transactions.
 
 The CLI is primarily geared to be used by technical users to interact with a deployment of AgeUSD, and to be an example for frontend developers to understand how to implement a frontend when looking to create a GUI. (Do note, the AgeUSD Headless dApp provides an interface for finding all input UTXOs without using UTXO-set scans as well, making the developer experience very streamlined)
-
-
 
 ## Related Works
 
