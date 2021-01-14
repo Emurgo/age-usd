@@ -360,8 +360,13 @@ impl BankBox {
         transaction_fee: u64,
     ) -> u64 {
         let base_amount = self.base_amount_from_redeeming_reservecoin(amount_to_redeem, oracle_box);
+        let fees = transaction_fee + (base_amount as f64 * IMPLEMENTOR_FEE_PERCENT) as u64;
 
-        base_amount - transaction_fee - (base_amount as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
+        if base_amount > fees {
+            return base_amount - fees;
+        } else {
+            return 0;
+        }
     }
 
     /// The amount of base currency (Ergs) which will be redeemed
@@ -393,8 +398,13 @@ impl BankBox {
         transaction_fee: u64,
     ) -> u64 {
         let base_amount = self.base_amount_from_redeeming_stablecoin(amount_to_redeem, oracle_box);
+        let fees = transaction_fee + (base_amount as f64 * IMPLEMENTOR_FEE_PERCENT) as u64;
 
-        base_amount - transaction_fee - (base_amount as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
+        if base_amount > fees {
+            return base_amount - fees;
+        } else {
+            return 0;
+        }
     }
 
     /// The amount of base currency (Ergs) which will be redeemed
