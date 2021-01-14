@@ -87,7 +87,7 @@ impl BankBox {
     /// after having covered all liabilities.
     #[wasm_bindgen]
     pub fn equity(&self, oracle_box: &ErgUsdOraclePoolBox) -> NanoErg {
-        if self.base_reserves() < self.liabilities(oracle_box) {
+        if self.base_reserves() <= self.liabilities(oracle_box) {
             return 0;
         }
         self.base_reserves() - self.liabilities(oracle_box)
@@ -129,7 +129,7 @@ impl BankBox {
     /// Current ReserveCoin nominal price
     #[wasm_bindgen]
     pub fn reservecoin_nominal_price(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        if self.num_circulating_reservecoins() == 0 || self.equity(oracle_box) == 0 {
+        if self.num_circulating_reservecoins() <= 1 || self.equity(oracle_box) == 0 {
             return RESERVECOIN_DEFAULT_PRICE;
         }
         self.equity(oracle_box) / self.num_circulating_reservecoins()
