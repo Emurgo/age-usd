@@ -359,14 +359,9 @@ impl BankBox {
         oracle_box: &ErgUsdOraclePoolBox,
         transaction_fee: u64,
     ) -> u64 {
-        // Cost to mint without fees
-        let feeless_cost = self.reservecoin_nominal_price(oracle_box) * amount_to_redeem;
-        // The StableCoin protocol fee charged
-        let protocol_fee = feeless_cost * FEE_PERCENT / 100;
+        let base_amount = self.base_amount_from_redeeming_reservecoin(amount_to_redeem, oracle_box);
 
-        let base_cost = feeless_cost + protocol_fee;
-
-        base_cost - transaction_fee - (base_cost as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
+        base_amount - transaction_fee - (base_amount as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
     }
 
     /// The amount of base currency (Ergs) which will be redeemed
@@ -379,11 +374,11 @@ impl BankBox {
         oracle_box: &ErgUsdOraclePoolBox,
     ) -> u64 {
         // Cost to mint without fees
-        let feeless_cost = self.reservecoin_nominal_price(oracle_box) * amount_to_redeem;
+        let feeless_amount = self.reservecoin_nominal_price(oracle_box) * amount_to_redeem;
         // The StableCoin protocol fee charged
-        let protocol_fee = feeless_cost * FEE_PERCENT / 100;
+        let protocol_fee = feeless_amount * FEE_PERCENT / 100;
 
-        feeless_cost - protocol_fee
+        feeless_amount - protocol_fee
     }
 
     /// The amount of nanoErgs which will be redeemed
@@ -397,14 +392,9 @@ impl BankBox {
         oracle_box: &ErgUsdOraclePoolBox,
         transaction_fee: u64,
     ) -> u64 {
-        // Cost to mint without fees
-        let feeless_cost = self.stablecoin_nominal_price(oracle_box) * amount_to_redeem;
-        // The StableCoin protocol fee charged
-        let protocol_fee = feeless_cost * FEE_PERCENT / 100;
+        let base_amount = self.base_amount_from_redeeming_stablecoin(amount_to_redeem, oracle_box);
 
-        let base_cost = feeless_cost + protocol_fee;
-
-        base_cost - transaction_fee - (base_cost as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
+        base_amount - transaction_fee - (base_amount as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
     }
 
     /// The amount of base currency (Ergs) which will be redeemed
@@ -416,12 +406,10 @@ impl BankBox {
         amount_to_redeem: u64,
         oracle_box: &ErgUsdOraclePoolBox,
     ) -> u64 {
-        // Cost to mint without fees
-        let feeless_cost = self.stablecoin_nominal_price(oracle_box) * amount_to_redeem;
-        // The StableCoin protocol fee charged
-        let protocol_fee = feeless_cost * FEE_PERCENT / 100;
+        let feeless_amount = self.stablecoin_nominal_price(oracle_box) * amount_to_redeem;
+        let protocol_fee = feeless_amount * FEE_PERCENT / 100;
 
-        feeless_cost - protocol_fee
+        feeless_amount - protocol_fee
     }
 }
 
