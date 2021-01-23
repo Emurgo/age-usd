@@ -1,12 +1,12 @@
 # The AgeUSD Stablecoin Protocol
 
-AgeUSD is a novel crypto-backed stablecoin protocol that has been created in joint partnership by the [Ergo Foundation](https://ergoplatform.org/en/foundation/), [EMURGO](https://emurgo.io/), and [IOG](https://iohk.io/en/about/) on top of the [Ergo Blockchain](https://ergoplatform.org/). This repository contains the specifications/smart contracts/off-chain code(headless dApp) of AgeUSD and holds everything required for you to deploy your own AgeUSD instance on top of the Ergo Blockchain.
+AgeUSD is a novel crypto-backed algorithmic stablecoin protocol that has been created in joint partnership by the [Ergo Foundation](https://ergoplatform.org/en/foundation/), [EMURGO](https://emurgo.io/), and [IOG](https://iohk.io/en/about/) on top of the [Ergo Blockchain](https://ergoplatform.org/). This repository contains the specifications/smart contracts/off-chain code(headless dApp) of AgeUSD and holds everything required for you to deploy your own AgeUSD instance on top of the Ergo Blockchain.
 
 AgeUSD does not rely on CDPs (collateralized debt positions) as is the current popular crypto-backed stablecoin design pattern. This was a conscious design decision made due to the fragility of CDP-based protocols in the face of sharp volatility and/or blockchain congestion. This was epitomized during [Black Thursday](https://forum.makerdao.com/t/black-thursday-response-thread/1433) where MakerDAO CDPs were triggered for liquidation due to volatility, and then sold off for $0 due to blockchain congestion which prevented others from bidding.
 
-Thanks to it's design, the scenario that happened on Black Thursday is _not possible_ for the AgeUSD protocol. Without CDPs, we do not have liquidation events nor the requirement for users to perform transactions to ensure that the liquidations actually work properly (rather than allowing a bad actor to steal funds away from the protocol). These are inherent vulnerable facets of using CDPs for minting stablecoins, and as such expose more risk to the end users.
+Thanks to its design, the scenario that happened on Black Thursday is _not possible_ for the AgeUSD protocol. Without CDPs, we do not have liquidation events nor the requirement for users to perform transactions to ensure that the liquidations actually work properly (rather than allowing a bad actor to steal funds away from the protocol). These are inherent vulnerable facets of using CDPs for minting stablecoins, and as such expose more risk to the end users.
 
-The AgeUSD protocol has been designed to shrink the surface area of where such problems may arise. The goal is trying to automate as much as possible within the math of the protocol itself rather than relying on dynamic transaction posting which is liable to being broken under blockchain congestion. This isn't to say the AgeUSD solves all stablecoin problems, but it is an attempt at creating a higher assurance alternative to the current trends in the crypto-sphere.
+The AgeUSD protocol has been designed to shrink the surface area where such problems may arise. The goal is trying to automate as much as possible within the math of the protocol itself rather than relying on dynamic transaction posting which is liable to breaking under blockchain congestion. This isn't to say the AgeUSD protocol solves all stablecoin problems, but it is an attempt at creating a higher assurance alternative to the current trends in the crypto-sphere.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ The AgeUSD protocol has been designed to shrink the surface area of where such p
 
 ## How Does The AgeUSD Protocol Work?
 
-At it's core the AgeUSD protocol is quite simple to understand. There are two kinds of parties who interact with the protocol:
+At its core the AgeUSD protocol is quite simple to understand. There are two kinds of parties who interact with the protocol:
 
 1. Reserve Providers
 2. AgeUSD Users
@@ -36,7 +36,7 @@ For more detailed example scenarios check out the [AgeUSD stories](docs/stories.
 
 ## Fees
 
-The AgeUSD protocol fee parameter defaults are currently set at:
+The AgeUSD protocol fee parameter defaults are:
 
 1. 1% Protocol Fee
 2. 0.25% Frontend Implementor Fee
@@ -58,8 +58,6 @@ This repo holds the specifications, smart contracts, and off-chain code(headless
 ### AgeUSD Smart Contracts
 
 [The AgeUSD Smart Contracts](ageusd-smart-contracts) are written in ErgoScript and also start from `v0.1` and increase upwards as new features were added or bugs were fixed.
-
-...
 
 ### AgeUSD Headless dApp
 
