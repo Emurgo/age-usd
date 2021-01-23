@@ -32,7 +32,11 @@ As such Reserve Providers allow AgeUSD users to enjoy stability of value. On the
 
 This provides individuals with the ability to choose to either go "long" Ergs (via minting ReserveCoins), or to choose stability (via minting AgeUSD).
 
-For more detailed example scenarios check out the [AgeUSD stories](docs/stories.md) document.
+For more detailed explanations check out:
+
+1. [A Pegged and Crypto-Backed Algorithmic Stablecoin - Bruno Woltzenlogel Paleo - Ergo Summit 2021](https://github.com/Emurgo/age-usd/blob/main/docs/A%20Pegged%20and%20Crypto-Backed%20Algorithmic%20Stablecoin%20Slides%20-%20Bruno%20Woltzenlogel%20Paleo%20-%20Ergo%20Summit%202021.pdf)
+2. [AgeUSD Smart Contract Protocol Overview - Amitabh Saxena - Ergo Summit 2021](https://github.com/Emurgo/age-usd/blob/main/docs/AgeUSD%20Smart%20Contract%20Protocol%20Overview%20Slides%20-%20Amitabh%20Saxena%20-%20Ergo%20Summit%202021.pdf)
+3. The [AgeUSD stories](docs/stories.md) short summary document.
 
 ## Fees
 
