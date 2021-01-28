@@ -79,7 +79,8 @@ private[v4] object Contracts {
        |    val validDeltas = (scCircIn + scCircDelta == scCircOut) &&
        |                      (rcCircIn + rcCircDelta == rcCircOut) &&
        |                      (bcReserveIn + bcReserveDelta == bcReserveOut) &&
-       |                      circDelta >= $minTokenDelta && circDelta <= $maxTokenDelta
+       |                      circDelta >= $minTokenDelta && circDelta <= $maxTokenDelta &&
+       |                      scCircOut >= 0 && rcCircOut >= 0
        |
        |    val coinsConserved = totalRcIn == totalRcOut && totalScIn == totalScOut
        |
