@@ -14,6 +14,9 @@ private[v4] object Contracts {
 
   val minStorageRent = 10000000L
 
+  val maxTokenDelta = 10000L
+  val minTokenDelta = -10000L
+
   val feePercent = 1
 
   val coolingOffHeight: Int = 377770
@@ -75,7 +78,8 @@ private[v4] object Contracts {
        |
        |    val validDeltas = (scCircIn + scCircDelta == scCircOut) &&
        |                      (rcCircIn + rcCircDelta == rcCircOut) &&
-       |                      (bcReserveIn + bcReserveDelta == bcReserveOut)
+       |                      (bcReserveIn + bcReserveDelta == bcReserveOut) &&
+       |                      circDelta >= $minTokenDelta && circDelta <= $maxTokenDelta
        |
        |    val coinsConserved = totalRcIn == totalRcOut && totalScIn == totalScOut
        |
