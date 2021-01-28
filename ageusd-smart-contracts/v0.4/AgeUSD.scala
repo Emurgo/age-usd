@@ -85,6 +85,7 @@ private[v4] object Contracts {
        |
        |    val mandatoryRateConditions = rateBox.tokens(0)._1 == oraclePoolNFT
        |    val mandatoryBankConditions = bankBoxOut.value >= $minStorageRent &&
+       |                                  bankBoxOut.propositionBytes == bankBoxIn.propositionBytes &&
        |                                  rcExchangeXorScExchange &&
        |                                  coinsConserved &&
        |                                  validDeltas &&
