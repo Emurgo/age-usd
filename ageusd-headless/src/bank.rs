@@ -16,10 +16,8 @@ use ergo_headless_dapp_framework::{
 };
 use ergo_headless_dapp_framework::{BlockHeight, NanoErg, P2SAddressString};
 use ergo_lib::chain::ergo_box::{ErgoBox, ErgoBoxCandidate};
-use ergo_lib::chain::token::{Token, TokenAmount};
 use ergo_lib::chain::transaction::TxId;
 use ergo_lib_wasm::ergo_box::ErgoBox as WErgoBox;
-use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 
 /// The struct which represents the `Bank` stage.

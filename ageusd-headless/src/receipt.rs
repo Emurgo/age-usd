@@ -27,7 +27,7 @@ impl ReceiptBox {
         transaction_fee: NanoErg,
         implementor_fee: NanoErg,
         reservecoin_value_in_base: NanoErg,
-        bank_box: &BankBox,
+        _bank_box: &BankBox,
         input_ergs_total: NanoErg,
     ) -> Result<ErgoBoxCandidate, ProtocolError> {
         // Define the ReserveCoin token
@@ -65,7 +65,7 @@ impl ReceiptBox {
         transaction_fee: NanoErg,
         implementor_fee: NanoErg,
         stablecoin_value_in_base: NanoErg,
-        bank_box: &BankBox,
+        _bank_box: &BankBox,
         input_ergs_total: NanoErg,
     ) -> Result<ErgoBoxCandidate, ProtocolError> {
         // Define the StableCoin token

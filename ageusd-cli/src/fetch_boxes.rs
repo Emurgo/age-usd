@@ -1,5 +1,5 @@
 use ageusd_headless::update::{BallotBox, UpdateBox};
-use ergo_headless_dapp_framework::{ErgUsdOraclePoolBox, ExplorerFindable, SpecifiedBox};
+use ergo_headless_dapp_framework::{ExplorerFindable, SpecifiedBox};
 use reqwest::blocking::get;
 
 /// Fetch the user's `BallotBox` from the public Ergo Explorer API

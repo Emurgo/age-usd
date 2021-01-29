@@ -12,7 +12,6 @@ use ergo_node_interface::local_config::{
     create_new_local_config_file, does_local_config_exist, new_interface_from_local_config,
 };
 use ergo_node_interface::{NodeInterface, Scan};
-use fetch_boxes::{fetch_all_ballot_boxes, fetch_update_box, fetch_user_ballot_box};
 use scan::{
     register_all_ballot_tokens_scan, register_bank_scan, register_oracle_pool_scan,
     register_reservecoin_scan, register_stablecoin_scan, register_update_box_scan,
