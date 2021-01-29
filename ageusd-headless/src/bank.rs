@@ -299,6 +299,22 @@ impl BankBox {
             + (base_cost as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
     }
 
+    /// The amount of nanoErg fees for minting StableCoins.
+    /// This includes protocol fees, tx fees, and implementor fees.
+    #[wasm_bindgen]
+    pub fn fees_from_minting_stablecoin(
+        &self,
+        amount_to_mint: u64,
+        oracle_box: &ErgUsdOraclePoolBox,
+        transaction_fee: u64,
+    ) -> u64 {
+        let feeless_amount = self.stablecoin_nominal_price(oracle_box) * amount_to_mint;
+        let protocol_fee = feeless_amount * FEE_PERCENT / 100;
+        let implementor_fee = (self.base_cost_to_mint_stablecoin(amount_to_mint, oracle_box) as f64
+            * IMPLEMENTOR_FEE_PERCENT) as u64;
+        protocol_fee + transaction_fee + implementor_fee
+    }
+
     /// The amount of base currency (Ergs) which is needed to cover minting
     /// the provided number of StableCoins.
     #[wasm_bindgen]
@@ -330,6 +346,23 @@ impl BankBox {
             + transaction_fee
             + (MIN_BOX_VALUE * 2)
             + (base_cost as f64 * IMPLEMENTOR_FEE_PERCENT) as u64
+    }
+
+    /// The amount of nanoErg fees for minting ReserveCoins.
+    /// This includes protocol fees, tx fees, and implementor fees.
+    #[wasm_bindgen]
+    pub fn fees_from_minting_reservecoin(
+        &self,
+        amount_to_mint: u64,
+        oracle_box: &ErgUsdOraclePoolBox,
+        transaction_fee: u64,
+    ) -> u64 {
+        let feeless_amount = self.reservecoin_nominal_price(oracle_box) * amount_to_mint;
+        let protocol_fee = feeless_amount * FEE_PERCENT / 100;
+        let implementor_fee = (self.base_cost_to_mint_reservecoin(amount_to_mint, oracle_box)
+            as f64
+            * IMPLEMENTOR_FEE_PERCENT) as u64;
+        protocol_fee + transaction_fee + implementor_fee
     }
 
     /// The amount of base currency (Ergs) which is needed to cover minting
@@ -369,9 +402,26 @@ impl BankBox {
         }
     }
 
+    /// The amount of nanoErg fees for redeeming ReserveCoins.
+    /// This includes protocol fees, tx fees, and implementor fees.
+    #[wasm_bindgen]
+    pub fn fees_from_redeeming_reservecoin(
+        &self,
+        amount_to_redeem: u64,
+        oracle_box: &ErgUsdOraclePoolBox,
+        transaction_fee: u64,
+    ) -> u64 {
+        let feeless_amount = self.reservecoin_nominal_price(oracle_box) * amount_to_redeem;
+        let protocol_fee = feeless_amount * FEE_PERCENT / 100;
+        let implementor_fee =
+            (self.base_amount_from_redeeming_reservecoin(amount_to_redeem, oracle_box) as f64
+                * IMPLEMENTOR_FEE_PERCENT) as u64;
+        protocol_fee + transaction_fee + implementor_fee
+    }
+
     /// The amount of base currency (Ergs) which will be redeemed
     /// from the protocol based on current reserves + the number of
-    /// ReserveCoins being redeemed by the user.
+    /// ReserveCoins being redeemed by the user. Includes protocol fee.
     #[wasm_bindgen]
     pub fn base_amount_from_redeeming_reservecoin(
         &self,
@@ -405,6 +455,23 @@ impl BankBox {
         } else {
             return 0;
         }
+    }
+
+    /// The amount of nanoErg fees for redeeming StableCoins.
+    /// This includes protocol fees, tx fees, and implementor fees.
+    #[wasm_bindgen]
+    pub fn fees_from_redeeming_stablecoin(
+        &self,
+        amount_to_redeem: u64,
+        oracle_box: &ErgUsdOraclePoolBox,
+        transaction_fee: u64,
+    ) -> u64 {
+        let feeless_amount = self.stablecoin_nominal_price(oracle_box) * amount_to_redeem;
+        let protocol_fee = feeless_amount * FEE_PERCENT / 100;
+        let implementor_fee =
+            (self.base_amount_from_redeeming_stablecoin(amount_to_redeem, oracle_box) as f64
+                * IMPLEMENTOR_FEE_PERCENT) as u64;
+        protocol_fee + transaction_fee + implementor_fee
     }
 
     /// The amount of base currency (Ergs) which will be redeemed
