@@ -148,6 +148,9 @@ impl BankBox {
             let new_reserve_ratio = self.mint_stablecoin_reserve_ratio(oracle_box, num_to_mint);
             // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
             if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                if (increment_amount + 1) >= num_to_mint {
+                    break;
+                }
                 num_to_mint -= increment_amount + 1;
                 loop {
                     let new_reserve_ratio =
@@ -200,6 +203,9 @@ impl BankBox {
             let new_reserve_ratio = self.mint_reservecoin_reserve_ratio(oracle_box, num_to_mint);
             // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
             if new_reserve_ratio >= MAX_RESERVE_RATIO {
+                if (increment_amount + 1) >= num_to_mint {
+                    break;
+                }
                 num_to_mint -= increment_amount + 1;
                 loop {
                     let new_reserve_ratio =
@@ -253,6 +259,9 @@ impl BankBox {
                 self.redeem_reservecoin_reserve_ratio(oracle_box, num_to_redeem);
             // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
             if new_reserve_ratio <= MIN_RESERVE_RATIO {
+                if (increment_amount + 1) >= num_to_redeem {
+                    break;
+                }
                 num_to_redeem -= increment_amount + 1;
                 loop {
                     let new_reserve_ratio =
