@@ -154,6 +154,9 @@ impl BankBox {
                         self.mint_stablecoin_reserve_ratio(oracle_box, num_to_mint);
                     if new_reserve_ratio <= MIN_RESERVE_RATIO {
                         num_to_mint -= 1;
+                        if num_to_mint == 0 {
+                            return 0;
+                        }
                         break;
                     }
                     num_to_mint += 1;
@@ -203,6 +206,9 @@ impl BankBox {
                         self.mint_reservecoin_reserve_ratio(oracle_box, num_to_mint);
                     if new_reserve_ratio >= MAX_RESERVE_RATIO {
                         num_to_mint -= 1;
+                        if num_to_mint == 0 {
+                            return 0;
+                        }
                         break;
                     }
                     num_to_mint += 1;
@@ -253,6 +259,9 @@ impl BankBox {
                         self.redeem_reservecoin_reserve_ratio(oracle_box, num_to_redeem);
                     if new_reserve_ratio <= MIN_RESERVE_RATIO {
                         num_to_redeem -= 1;
+                        if num_to_mint == 0 {
+                            return 0;
+                        }
                         break;
                     }
                     num_to_redeem += 1;
