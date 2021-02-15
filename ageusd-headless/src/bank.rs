@@ -136,7 +136,7 @@ impl BankBox {
     /// Number of StableCoins possible to be minted based off of current Reserve Ratio
     #[wasm_bindgen]
     pub fn num_able_to_mint_stablecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        let mut num_to_mint = 1;
+        let mut num_to_mint = 0;
 
         // Add self-adjusting increment to increase efficiency of function
         let mut increment_amount = 1;
@@ -191,7 +191,7 @@ impl BankBox {
     /// Number of ReserveCoins possible to be minted based off of current Reserve Ratio
     #[wasm_bindgen]
     pub fn num_able_to_mint_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        let mut num_to_mint = 1;
+        let mut num_to_mint = 0;
 
         // Add self-adjusting increment to increase efficiency of function
         let mut increment_amount = 1;
@@ -246,7 +246,7 @@ impl BankBox {
     /// Number of ReserveCoins possible to be redeemed based off of current Reserve Ratio
     #[wasm_bindgen]
     pub fn num_able_to_redeem_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        let mut num_to_redeem = 1;
+        let mut num_to_redeem = 0;
 
         // Add self-adjusting increment to increase efficiency of function
         let mut increment_amount = 1;
