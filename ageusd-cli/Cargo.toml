@@ -8,15 +8,15 @@ edition = "2018"
 
 [dependencies]
 ageusd-headless              = { path = "../ageusd-headless" }
-ergo-headless-dapp-framework = "0.1.9"
+ergo-headless-dapp-framework = "0.1.10"
 openssl                      = { version = "0.10", features = ["vendored"] }
 reqwest                      = { version = "0.10.8", features = ["blocking"] }
-ergo-lib                     = "0.4.2"
-ergo-lib-wasm                = "0.4.2"
-ergo-node-interface          = "0.2.3"
+ergo-lib                     = "0.5.1"
+ergo-lib-wasm                = "0.5.1"
+ergo-node-interface          = "0.2.4"
 docopt                       = "1.1.0"
 serde                        = "1.0.117"
 serde_json                   = "1.0.59"
 json                         = "0.12.4"
 anyhow                       = "1.0.34"
-crossterm                    = "0.18.2"
+crossterm                    = "0.19.0"
