@@ -6,8 +6,9 @@
 use crate::equations::reserve_ratio;
 use crate::error::ProtocolError;
 use crate::parameters::{
-    BANK_NFT_ID, FEE_PERCENT, IMPLEMENTOR_FEE_PERCENT, MAX_RESERVE_RATIO, MIN_BOX_VALUE,
-    MIN_RESERVE_RATIO, RESERVECOIN_DEFAULT_PRICE, RESERVECOIN_TOKEN_ID, STABLECOIN_TOKEN_ID,
+    BANK_NFT_ID, COOLING_OFF_HEIGHT, FEE_PERCENT, IMPLEMENTOR_FEE_PERCENT, MAX_RESERVE_RATIO,
+    MIN_BOX_VALUE, MIN_RESERVE_RATIO, RESERVECOIN_DEFAULT_PRICE, RESERVECOIN_TOKEN_ID,
+    STABLECOIN_TOKEN_ID,
 };
 use ergo_headless_dapp_framework::encoding::{build_token, unwrap_long};
 use ergo_headless_dapp_framework::{
@@ -243,9 +244,19 @@ impl BankBox {
         )
     }
 
-    /// Number of ReserveCoins possible to be redeemed based off of current Reserve Ratio
+    /// Number of ReserveCoins possible to be redeemed based off of current Reserve Ratio.
+    /// Checks if the provided `current_height` is before the COOLING_OFF_HEIGHT to verify
+    /// as well.
     #[wasm_bindgen]
-    pub fn num_able_to_redeem_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+    pub fn num_able_to_redeem_reservecoin(
+        &self,
+        oracle_box: &ErgUsdOraclePoolBox,
+        current_height: BlockHeight,
+    ) -> u64 {
+        if current_height < COOLING_OFF_HEIGHT {
+            return u64::MAX;
+        }
+
         let mut num_to_redeem = 0;
 
         // Add self-adjusting increment to increase efficiency of function
