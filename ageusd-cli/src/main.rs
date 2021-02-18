@@ -141,7 +141,8 @@ fn main() {
         );
         println!(
             "{} ReserveCoins",
-            bank_box.num_able_to_mint_reservecoin(&oracle_box)
+            bank_box
+                .num_able_to_mint_reservecoin(&oracle_box, node.current_block_height().unwrap())
         );
 
         println!("\nUser Wallet Status\n======================");
