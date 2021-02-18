@@ -9,11 +9,9 @@ use ergo_headless_dapp_framework::{
     BoxSpec, HeadlessDappError, SpecBox, WASMBox, WrapBox,
 };
 use ergo_lib::chain::ergo_box::{BoxValue, ErgoBox, NonMandatoryRegisters};
-use ergo_lib::chain::token::{Token, TokenAmount};
 use ergo_lib::chain::transaction::TxId;
 use ergo_lib_wasm::box_coll::ErgoBoxes;
 use ergo_lib_wasm::ergo_box::ErgoBox as WErgoBox;
-use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 
 /// A predicated box which holds ReserveCoins

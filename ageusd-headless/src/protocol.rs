@@ -805,8 +805,6 @@ impl StableCoinProtocol {
         //
         // The total number of StableCoins provided as inputs in rc_boxes
         let input_stablecoins_total = StableCoinBox::sum_token_amount(&sc_boxes);
-        // Oracle datapoint
-        let oracle_rate = oracle_box.datapoint_in_cents();
         // Base Reserves of Bank
         let base_reserves_in = bank_box.base_reserves();
         // Number of StableCoins in circulation currently/in inputs
