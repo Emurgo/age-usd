@@ -196,7 +196,12 @@ impl BankBox {
         &self,
         oracle_box: &ErgUsdOraclePoolBox,
         amount: u64,
+        current_height: BlockHeight,
     ) -> bool {
+        if current_height < COOLING_OFF_HEIGHT {
+            return true;
+        }
+
         let new_reserve_ratio = self.mint_reservecoin_reserve_ratio(oracle_box, amount);
         if new_reserve_ratio <= MAX_RESERVE_RATIO {
             return true;
