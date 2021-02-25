@@ -142,7 +142,7 @@ impl BankBox {
         let mut high = u64::MAX - 1;
 
         while low <= high {
-            let mid = ((high - low) / 2) + low;
+            let mid = low + (high / 2);
             let new_reserve_ratio = self.mint_stablecoin_reserve_ratio(oracle_box, mid);
 
             if new_reserve_ratio == MIN_RESERVE_RATIO {
@@ -247,7 +247,7 @@ impl BankBox {
         let mut high = u64::MAX - 1;
 
         while low <= high {
-            let mid = ((high - low) / 2) + low;
+            let mid = low + (high / 2);
             let new_reserve_ratio = self.redeem_reservecoin_reserve_ratio(oracle_box, mid);
 
             if new_reserve_ratio == MIN_RESERVE_RATIO {
