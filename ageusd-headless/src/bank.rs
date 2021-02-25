@@ -137,10 +137,14 @@ impl BankBox {
     /// Number of StableCoins possible to be minted based off of current Reserve Ratio
     #[wasm_bindgen]
     pub fn num_able_to_mint_stablecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        let mut num_to_mint = 0;
+        // Start at approximately the right amount
+        let mut num_to_mint = self.equity(oracle_box) / oracle_box.datapoint_in_cents() / 4;
 
         // Add self-adjusting increment to increase efficiency of function
         let mut increment_amount = 1;
+        if self.num_circulating_stablecoins() > 100 {
+            increment_amount = 10;
+        }
         if self.num_circulating_stablecoins() > 1000000 {
             increment_amount = self.num_circulating_reservecoins() / 10000;
         }
