@@ -176,7 +176,8 @@ impl BankBox {
     }
 
     /// Acquire the new reserve ratio after minting `num_to_mint` Stablecoins
-    fn mint_stablecoin_reserve_ratio(
+    #[wasm_bindgen]
+    pub fn mint_stablecoin_reserve_ratio(
         &self,
         oracle_box: &ErgUsdOraclePoolBox,
         num_to_mint: u64,
@@ -258,7 +259,8 @@ impl BankBox {
     }
 
     /// Acquire the new reserve ratio after minting `num_to_mint` Reservecoins
-    fn mint_reservecoin_reserve_ratio(
+    #[wasm_bindgen]
+    pub fn mint_reservecoin_reserve_ratio(
         &self,
         oracle_box: &ErgUsdOraclePoolBox,
         num_to_mint: u64,
@@ -317,7 +319,8 @@ impl BankBox {
     }
 
     /// Acquire the new reserve ratio after minting `num_to_redeem` Reservecoins
-    fn redeem_reservecoin_reserve_ratio(
+    #[wasm_bindgen]
+    pub fn redeem_reservecoin_reserve_ratio(
         &self,
         oracle_box: &ErgUsdOraclePoolBox,
         num_to_redeem: u64,
@@ -334,6 +337,7 @@ impl BankBox {
     /// The total amount of nanoErgs which is needed to cover minting
     /// the provided number of ReserveCoins, cover tx fees, implementor
     /// fee, etc.
+    #[wasm_bindgen]
     pub fn total_cost_to_mint_stablecoin(
         &self,
         amount_to_mint: u64,
