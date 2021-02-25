@@ -133,6 +133,11 @@ impl BankBox {
         }
         self.equity(oracle_box) / self.num_circulating_reservecoins()
     }
+    /// Number of StableCoins possible to be minted based off of current Reserve Ratio
+    #[wasm_bindgen]
+    pub fn num_able_to_mint_stablecoin_naive(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+        self.equity(oracle_box) / oracle_box.datapoint_in_cents() / 4
+    }
 
     /// Number of StableCoins possible to be minted based off of current Reserve Ratio
     #[wasm_bindgen]
@@ -254,6 +259,11 @@ impl BankBox {
             self.num_circulating_stablecoins(),
             oracle_box.datapoint_in_cents(),
         )
+    }
+
+    #[wasm_bindgen]
+    pub fn num_able_to_redeem_reservecoin_naive(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+        self.equity(oracle_box) / self.reservecoin_nominal_price(oracle_box)
     }
 
     /// Number of ReserveCoins possible to be redeemed based off of current Reserve Ratio.
