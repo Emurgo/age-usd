@@ -14,5 +14,6 @@ pub fn reserve_ratio(
     if circulating_stablecoins == 0 {
         return (base_reserves * 100) / (1 * oracle_rate);
     }
-    (base_reserves * 100) / (circulating_stablecoins * oracle_rate)
+    let per_stablecoin_rate = (base_reserves * 100) / circulating_stablecoins;
+    per_stablecoin_rate / oracle_rate
 }
