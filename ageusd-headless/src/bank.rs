@@ -142,7 +142,7 @@ impl BankBox {
         let mut high = u64::MAX - 1;
         let mid = 0;
 
-        while low <= high {
+        loop {
             let mid = ((high - low) / 2) + low;
             let new_reserve_ratio = self.redeem_reservecoin_reserve_ratio(oracle_box, mid);
 
@@ -150,14 +150,12 @@ impl BankBox {
                 return mid;
             }
 
-            // Search values that are greater than val - to right of current mid_index
             if new_reserve_ratio < MIN_RESERVE_RATIO {
-                low = mid + 1;
+                high = mid - 1;
             }
 
-            // Search values that are less than val - to the left of current mid_index
             if new_reserve_ratio > MIN_RESERVE_RATIO {
-                high = mid - 1;
+                low = mid + 1;
             }
         }
         return mid;
@@ -260,12 +258,12 @@ impl BankBox {
 
             // Search values that are greater than val - to right of current mid_index
             if new_reserve_ratio < MIN_RESERVE_RATIO {
-                low = mid + 1;
+                high = mid - 1;
             }
 
             // Search values that are less than val - to the left of current mid_index
             if new_reserve_ratio > MIN_RESERVE_RATIO {
-                high = mid - 1;
+                low = mid + 1;
             }
         }
         return mid;
