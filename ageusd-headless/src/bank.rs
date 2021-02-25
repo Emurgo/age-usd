@@ -261,12 +261,19 @@ impl BankBox {
     /// as well.
     #[wasm_bindgen]
     pub fn num_able_to_redeem_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        let mut num_to_redeem = 0;
+        let mut num_to_redeem =
+            self.equity(oracle_box) / self.reservecoin_nominal_price(oracle_box);
 
         // Add self-adjusting increment to increase efficiency of function
         let mut increment_amount = 1;
         if self.num_circulating_reservecoins() > 1000 {
             increment_amount = self.num_circulating_reservecoins() / 100;
+        }
+        if self.num_circulating_reservecoins() > 100000 {
+            increment_amount = self.num_circulating_reservecoins() / 1000;
+        }
+        if self.num_circulating_reservecoins() > 10000000 {
+            increment_amount = self.num_circulating_reservecoins() / 10000;
         }
 
         loop {
