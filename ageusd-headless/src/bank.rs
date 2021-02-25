@@ -133,54 +133,34 @@ impl BankBox {
         }
         self.equity(oracle_box) / self.num_circulating_reservecoins()
     }
-    /// Number of StableCoins possible to be minted based off of current Reserve Ratio
-    #[wasm_bindgen]
-    pub fn num_able_to_mint_stablecoin_naive(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        self.equity(oracle_box) / oracle_box.datapoint_in_cents() / 4
-    }
 
     /// Number of StableCoins possible to be minted based off of current Reserve Ratio
     #[wasm_bindgen]
     pub fn num_able_to_mint_stablecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
         // Start at approximately the right amount
-        let mut num_to_mint = self.equity(oracle_box) / oracle_box.datapoint_in_cents() / 4;
+        let mut low = self.equity(oracle_box) / oracle_box.datapoint_in_cents() / 4;
+        let mut high = u64::MAX - 1;
+        let mid = 0;
 
-        // Add self-adjusting increment to increase efficiency of function
-        let mut increment_amount = 1;
-        if self.num_circulating_stablecoins() > 100 {
-            increment_amount = 10;
-        }
-        if self.num_circulating_stablecoins() > 1000000 {
-            increment_amount = self.num_circulating_reservecoins() / 10000;
-        }
+        while low <= high {
+            let mid = ((high - low) / 2) + low;
+            let new_reserve_ratio = self.redeem_reservecoin_reserve_ratio(oracle_box, mid);
 
-        loop {
-            let new_reserve_ratio = self.mint_stablecoin_reserve_ratio(oracle_box, num_to_mint);
-            // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
-            if new_reserve_ratio <= MIN_RESERVE_RATIO {
-                if (increment_amount + 1) >= num_to_mint {
-                    break;
-                }
-                num_to_mint -= increment_amount + 1;
-                loop {
-                    let new_reserve_ratio =
-                        self.mint_stablecoin_reserve_ratio(oracle_box, num_to_mint);
-                    if new_reserve_ratio <= MIN_RESERVE_RATIO {
-                        num_to_mint -= 1;
-                        if num_to_mint == 0 {
-                            return 0;
-                        }
-                        break;
-                    }
-                    num_to_mint += 1;
-                }
-                break;
+            if new_reserve_ratio == MIN_RESERVE_RATIO {
+                return mid;
             }
-            // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
-            num_to_mint += increment_amount;
-        }
 
-        num_to_mint
+            // Search values that are greater than val - to right of current mid_index
+            if new_reserve_ratio < MIN_RESERVE_RATIO {
+                low = mid + 1;
+            }
+
+            // Search values that are less than val - to the left of current mid_index
+            if new_reserve_ratio > MIN_RESERVE_RATIO {
+                high = mid - 1;
+            }
+        }
+        return mid;
     }
 
     /// Acquire the new reserve ratio after minting `num_to_mint` Stablecoins
@@ -261,59 +241,34 @@ impl BankBox {
         )
     }
 
-    #[wasm_bindgen]
-    pub fn num_able_to_redeem_reservecoin_naive(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        self.equity(oracle_box) / self.reservecoin_nominal_price(oracle_box)
-    }
-
     /// Number of ReserveCoins possible to be redeemed based off of current Reserve Ratio.
     /// Checks if the provided `current_height` is before the COOLING_OFF_HEIGHT to verify
     /// as well.
     #[wasm_bindgen]
     pub fn num_able_to_redeem_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
-        let mut num_to_redeem =
-            self.equity(oracle_box) / self.reservecoin_nominal_price(oracle_box);
+        let mut low = 0;
+        let mut high = u64::MAX - 1;
+        let mid = 0;
 
-        // Add self-adjusting increment to increase efficiency of function
-        let mut increment_amount = 1;
-        if self.num_circulating_reservecoins() > 1000 {
-            increment_amount = self.num_circulating_reservecoins() / 100;
-        }
-        if self.num_circulating_reservecoins() > 100000 {
-            increment_amount = self.num_circulating_reservecoins() / 1000;
-        }
-        if self.num_circulating_reservecoins() > 10000000 {
-            increment_amount = self.num_circulating_reservecoins() / 10000;
-        }
+        while low <= high {
+            let mid = ((high - low) / 2) + low;
+            let new_reserve_ratio = self.redeem_reservecoin_reserve_ratio(oracle_box, mid);
 
-        loop {
-            let new_reserve_ratio =
-                self.redeem_reservecoin_reserve_ratio(oracle_box, num_to_redeem);
-            // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
-            if new_reserve_ratio <= MIN_RESERVE_RATIO {
-                if (increment_amount + 1) >= num_to_redeem {
-                    break;
-                }
-                num_to_redeem -= increment_amount + 1;
-                loop {
-                    let new_reserve_ratio =
-                        self.redeem_reservecoin_reserve_ratio(oracle_box, num_to_redeem);
-                    if new_reserve_ratio <= MIN_RESERVE_RATIO {
-                        num_to_redeem -= 1;
-                        if num_to_redeem == 0 {
-                            return 0;
-                        }
-                        break;
-                    }
-                    num_to_redeem += 1;
-                }
-                break;
+            if new_reserve_ratio == MIN_RESERVE_RATIO {
+                return mid;
             }
-            // If still above Minimum Reserve Ratio, increase the `num_to_redeem` and test again
-            num_to_redeem += increment_amount;
-        }
 
-        num_to_redeem
+            // Search values that are greater than val - to right of current mid_index
+            if new_reserve_ratio < MIN_RESERVE_RATIO {
+                low = mid + 1;
+            }
+
+            // Search values that are less than val - to the left of current mid_index
+            if new_reserve_ratio > MIN_RESERVE_RATIO {
+                high = mid - 1;
+            }
+        }
+        return mid;
     }
 
     /// Acquire the new reserve ratio after minting `num_to_redeem` Reservecoins
