@@ -154,7 +154,6 @@ impl BankBox {
         // Start at approximately the right amount
         let mut low = self.equity(oracle_box) / oracle_box.datapoint_in_cents() / 4;
         let mut high = u64::MAX - 1;
-        let mid = 0;
 
         while low <= high {
             let mid = ((high - low) / 2) + low;
@@ -172,7 +171,7 @@ impl BankBox {
                 low = mid + 1;
             }
         }
-        return mid;
+        return low;
     }
 
     /// Acquire the new reserve ratio after minting `num_to_mint` Stablecoins
@@ -295,7 +294,6 @@ impl BankBox {
     pub fn num_able_to_redeem_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
         let mut low = 0;
         let mut high = u64::MAX - 1;
-        let mid = 0;
 
         while low <= high {
             let mid = ((high - low) / 2) + low;
@@ -315,7 +313,7 @@ impl BankBox {
                 low = mid + 1;
             }
         }
-        return mid;
+        return low;
     }
 
     /// Acquire the new reserve ratio after minting `num_to_redeem` Reservecoins
