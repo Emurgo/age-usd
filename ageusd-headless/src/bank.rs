@@ -325,8 +325,12 @@ impl BankBox {
         oracle_box: &ErgUsdOraclePoolBox,
         num_to_redeem: u64,
     ) -> u64 {
-        let new_base_reserves =
-            self.base_reserves() - self.base_cost_to_mint_reservecoin(num_to_redeem, oracle_box);
+        let redeem_amount = self.base_cost_to_mint_reservecoin(num_to_redeem, oracle_box);
+        let mut new_base_reserves = 0;
+        if redeem_amount < self.base_reserves() {
+            new_base_reserves = self.base_reserves() - redeem_amount;
+        }
+
         reserve_ratio(
             new_base_reserves,
             self.num_circulating_stablecoins(),
