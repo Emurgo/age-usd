@@ -379,8 +379,7 @@ impl StableCoinProtocol {
         // Performing Checks
         //
         // Ensure Reserve Ratio is below maximum
-        if !bank_box.able_to_mint_reservecoin_amount(oracle_box, amount_to_mint, COOLING_OFF_HEIGHT)
-        {
+        if !bank_box.able_to_mint_reservecoin_amount(oracle_box, amount_to_mint, current_height) {
             return Err(ProtocolError::InvalidReserveRatio());
         }
         // Ensure more than 0 ReserveCoins are attempted to be minted
