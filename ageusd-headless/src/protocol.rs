@@ -512,9 +512,9 @@ impl StableCoinProtocol {
         // Total ergs inside of `ergs_boxes`
         let input_ergs_total = ErgsBox::sum_ergs_boxes_value(&ergs_boxes);
         // Oracle datapoint
-        let oracle_rate = oracle_box.datapoint_in_cents();
+        // let oracle_rate = oracle_box.datapoint_in_cents();
         // Erg Reserves in Bank Box
-        let base_reserves_in = bank_box.base_reserves();
+        // let base_reserves_in = bank_box.base_reserves();
         // Number of StableCoins in circulation currently/in inputs
         let circulating_stablecoins_in = bank_box.num_circulating_stablecoins();
         // Amount of Ergs needed to cover amount_to_mint
@@ -522,21 +522,24 @@ impl StableCoinProtocol {
             bank_box.base_cost_to_mint_stablecoin(amount_to_mint, oracle_box);
         // Amount to pay out implementor.
         let implementor_fee = (stablecoin_value_in_base as f64 * IMPLEMENTOR_FEE_PERCENT) as u64;
-        // New Base Reserves Total After Minting
-        let base_reserves_out = base_reserves_in + stablecoin_value_in_base;
         // New stablecoin in circulation after minting
         let circulating_stablecoins_out = circulating_stablecoins_in + amount_to_mint;
+        // New Base Reserves Total After Minting
+        // let base_reserves_out = base_reserves_in + stablecoin_value_in_base;
         // The new reserve ratio that will be in the output Bank box
-        let reserve_ratio_out =
-            reserve_ratio(base_reserves_out, circulating_stablecoins_out, oracle_rate);
+        // let reserve_ratio_out =
+        // reserve_ratio(base_reserves_out, circulating_stablecoins_out, oracle_rate);
 
         //
         // Performing Checks
         //
         // Ensure Reserve Ratio is above minimum
-        if reserve_ratio_out < self.min_reserve_ratio() {
+        if !bank_box.able_to_mint_stablecoin_amount(oracle_box, amount_to_mint) {
             return Err(ProtocolError::InvalidReserveRatio());
         }
+        // if reserve_ratio_out < self.min_reserve_ratio() {
+        //     return Err(ProtocolError::InvalidReserveRatio());
+        // }
         // Ensure more than 0 StableCoins are attempted to be minted
         if amount_to_mint == 0 {
             return Err(ProtocolError::InvalidInputValue(
