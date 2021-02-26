@@ -366,9 +366,9 @@ impl StableCoinProtocol {
         // Total ergs inside of `ergs_boxes`
         let input_ergs_total = ErgsBox::sum_ergs_boxes_value(&ergs_boxes);
         // Oracle datapoint
-        let oracle_rate = oracle_box.datapoint_in_cents();
+        // let oracle_rate = oracle_box.datapoint_in_cents();
         // Erg Reserves in Bank Box
-        let base_reserves_in = bank_box.base_reserves();
+        // let base_reserves_in = bank_box.base_reserves();
         // Number of ReserveCoins in circulation currently/in inputs
         let circulating_reservecoins_in = bank_box.num_circulating_reservecoins();
         // Amount of Ergs needed to cover amount_to_mint
@@ -376,21 +376,23 @@ impl StableCoinProtocol {
             bank_box.base_cost_to_mint_reservecoin(amount_to_mint, oracle_box);
         // Amount to pay out implementor.
         let implementor_fee = (reservecoin_value_in_base as f64 * IMPLEMENTOR_FEE_PERCENT) as u64;
-        let base_reserves_out = base_reserves_in + reservecoin_value_in_base;
         // New ReserveCoins in circulation after minting
         let circulating_reservecoins_out = circulating_reservecoins_in + amount_to_mint;
+        // let base_reserves_out = base_reserves_in + reservecoin_value_in_base;
         // The new reserve ratio that will be in the output Bank box
-        let reserve_ratio_out = reserve_ratio(
-            base_reserves_out,
-            bank_box.num_circulating_stablecoins(),
-            oracle_rate,
-        );
+        // let reserve_ratio_out = reserve_ratio(
+        //     base_reserves_out,
+        //     bank_box.num_circulating_stablecoins(),
+        //     oracle_rate,
+        // );
 
         //
         // Performing Checks
         //
         // Ensure Reserve Ratio is below maximum
-        if reserve_ratio_out >= self.max_reserve_ratio() && current_height > COOLING_OFF_HEIGHT {
+        // if reserve_ratio_out >= self.max_reserve_ratio() && current_height > COOLING_OFF_HEIGHT {
+        if !bank_box.able_to_mint_reservecoin_amount(oracle_box, amount_to_mint, COOLING_OFF_HEIGHT)
+        {
             return Err(ProtocolError::InvalidReserveRatio());
         }
         // Ensure more than 0 ReserveCoins are attempted to be minted
@@ -677,7 +679,8 @@ impl StableCoinProtocol {
             return Err(ProtocolError::InsufficientReserveCoins(amount_to_redeem));
         }
         // Check that sufficient number of ReserveCoins are circulating
-        if reservecoin_value_in_base > base_reserves_in {
+        // if reservecoin_value_in_base > base_reserves_in {
+        if !bank_box.able_to_redeem_reservecoin_amount(oracle_box, amount_to_redeem) {
             return Err(ProtocolError::InsufficientBaseReserves(base_reserves_in));
         }
         // New Base Reserves Total After Redeeming
