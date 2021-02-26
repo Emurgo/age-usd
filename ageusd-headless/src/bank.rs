@@ -292,6 +292,10 @@ impl BankBox {
     /// as well.
     #[wasm_bindgen]
     pub fn num_able_to_redeem_reservecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+        if self.redeem_reservecoin_reserve_ratio(oracle_box, 1) <= MIN_RESERVE_RATIO {
+            return 0;
+        }
+
         let mut low = 0;
         let mut high = u64::MAX - 1;
 
