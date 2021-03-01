@@ -151,6 +151,10 @@ impl BankBox {
     /// Number of StableCoins possible to be minted based off of current Reserve Ratio
     #[wasm_bindgen]
     pub fn num_able_to_mint_stablecoin(&self, oracle_box: &ErgUsdOraclePoolBox) -> u64 {
+        if !self.able_to_mint_stablecoin_amount(oracle_box, 1) {
+            return 0;
+        }
+
         // Start at approximately the right amount
         let mut low = self.equity(oracle_box) / oracle_box.datapoint_in_cents() / 4;
         let mut high = u64::MAX - 1;
