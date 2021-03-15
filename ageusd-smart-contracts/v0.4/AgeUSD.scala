@@ -14,7 +14,7 @@ private[v4] object Contracts {
 
   val minStorageRent = 10000000L
 
-  val feePercent = 1
+  val feePercent = 2
 
   val coolingOffHeight: Int = 377770
   val INF = 1000000000L
