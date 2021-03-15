@@ -18,7 +18,7 @@ pub static COOLING_OFF_HEIGHT: u64 = 377770;
 
 // The fee percentage that is charge on each minting/redeeming action as a
 // u64. 1 == 1%
-pub static FEE_PERCENT: u64 = 1;
+pub static FEE_PERCENT: u64 = 2;
 // The fee percentage that users pay to the frontend implementor as a f64.
 // 1 == 100%, 0.01 == 1%
 pub static IMPLEMENTOR_FEE_PERCENT: f64 = 0.0025;
@@ -28,6 +28,6 @@ pub static STABLECOIN_TOKEN_ID: &str = "";
 pub static RESERVECOIN_TOKEN_ID: &str = "";
 pub static BANK_NFT_ID: &str = "";
 pub static ORACLE_POOL_NFT_ID: &str =
-    "0fb1eca4646950743bc5a8c341c16871a0ad9b4077e3b276bf93855d51a042d1";
+    "008a94c8c76bbaa1f0a346697d1794eb31d94b37e5533af9cc0b6932bf159339";
 pub static UPDATE_NFT_ID: &str = "";
 pub static UPDATE_BALLOT_TOKEN_ID: &str = "";
