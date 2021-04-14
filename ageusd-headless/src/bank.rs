@@ -220,45 +220,35 @@ impl BankBox {
         oracle_box: &ErgUsdOraclePoolBox,
         current_height: BlockHeight,
     ) -> u64 {
+        // Check for cooling off period
         if current_height < COOLING_OFF_HEIGHT {
             return u64::MAX;
         }
-
-        let mut num_to_mint = 0;
-
-        // Add self-adjusting increment to increase efficiency of function
-        let mut increment_amount = 1;
-        if self.num_circulating_reservecoins() > 1000 {
-            increment_amount = self.num_circulating_reservecoins() / 100;
+        // Check if able to mint any at all
+        if !self.able_to_mint_reservecoin_amount(oracle_box, 1, current_height) {
+            return 0;
         }
 
-        loop {
-            let new_reserve_ratio = self.mint_reservecoin_reserve_ratio(oracle_box, num_to_mint);
-            // If New Reserve Ratio is below minimum, meaning cannot mint anymore, then calculate final amount to mint and break
-            if new_reserve_ratio >= MAX_RESERVE_RATIO {
-                if (increment_amount + 1) >= num_to_mint {
-                    break;
-                }
-                num_to_mint -= increment_amount + 1;
-                loop {
-                    let new_reserve_ratio =
-                        self.mint_reservecoin_reserve_ratio(oracle_box, num_to_mint);
-                    if new_reserve_ratio >= MAX_RESERVE_RATIO {
-                        num_to_mint -= 1;
-                        if num_to_mint == 0 {
-                            return 0;
-                        }
-                        break;
-                    }
-                    num_to_mint += 1;
-                }
-                break;
+        let mut low = 0;
+        let mut high = u64::MAX - 1;
+
+        while low <= high {
+            let mid = ((high - low) / 2) + low;
+            let new_reserve_ratio = self.mint_reservecoin_reserve_ratio(oracle_box, mid);
+
+            if new_reserve_ratio == MAX_RESERVE_RATIO {
+                return mid;
             }
-            // If still above Minimum Reserve Ratio, increase the `num_to_mint` and test again
-            num_to_mint += increment_amount;
-        }
 
-        num_to_mint
+            if new_reserve_ratio > MAX_RESERVE_RATIO {
+                high = mid - 1;
+            }
+
+            if new_reserve_ratio < MAX_RESERVE_RATIO {
+                low = mid + 1;
+            }
+        }
+        return low;
     }
 
     /// Acquire the new reserve ratio after minting `num_to_mint` Reservecoins
